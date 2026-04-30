@@ -1,11 +1,13 @@
 import { generateToken } from "../lib/generateToken.js";
 import User from "./user.model.js";
 import bcrypt from "bcryptjs";
-
+import userSchema from "./user.model.js";
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 export const signup = async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email,phone, password } = req.body;
   try {
-    if ((!firstName, !lastName || !email || !password)) {
+    if ((!firstName, !lastName || !email || !phone || !password)) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -25,6 +27,7 @@ export const signup = async (req, res) => {
       firstName,
       lastName,
       email,
+      phone,
       password: hashedPassword,
     });
     if (newUser) {
@@ -37,6 +40,7 @@ export const signup = async (req, res) => {
         firstName: newUser.firstName,
         lastName: newUser.lastName,
         email: newUser.email,
+        phone: newUser.phone,
         // profilePic: newUser.profilePic,
       });
     } else {
@@ -70,6 +74,7 @@ export const login = async (req, res) => {
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
+      phone: user.phone,
       profilePic: user.profilePic,
     });
   } catch (error) {
@@ -152,3 +157,107 @@ export const checkAuth = (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+// forget password route
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
+
+export const forgetPassword = async (req, res) => {
+  console.log("API HIT ✅");
+
+  const { email } = req.body;
+
+  try {
+    const user = await userSchema.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const secret = process.env.JWT_SECRET + user.password;
+
+    const token = jwt.sign(
+      { email: user.email, id: user._id },
+      secret,
+      { expiresIn: '5m' } // thoda increase kar diya
+    );
+
+    const link = `${process.env.FRONTEND_URL}/reset-password/${user._id}/${token}`;
+    // ✅ EMAIL SEND KARNA
+    await transporter.sendMail({
+      to: email,
+      subject: "Reset Your Password",
+      html: `
+        <h3>Password Reset</h3>
+        <p>Click below to reset your password:</p>
+        <a href="${link}">
+          <button style="padding:10px;background:black;color:white;cursor:pointer">
+            Reset Password
+          </button>
+        </a>
+      `,
+    });
+
+    res.json({ message: "Reset email sent successfully" });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// reset password
+export const resetPassword = async(req, res) => {
+  console.log("RESET API HIT ✅");
+
+  const { id, token } = req.params;
+  const { password } = req.body;
+
+  console.log("ID:", id);
+  console.log("TOKEN:", token);
+  console.log("NEW PASSWORD:", password);
+
+  try {
+    // 🔍 Find user
+    const user = await userSchema.findById(id);
+
+    if (!user) {
+      console.log("❌ User not found");
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // 🔐 Create secret
+    const secret = process.env.JWT_SECRET + user.password;
+
+    // 🔥 Verify token
+    jwt.verify(token, secret);
+    console.log("TOKEN VERIFIED ✅");
+
+    // 🔐 Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 👉 Update password
+    user.password = hashedPassword;
+    await user.save();
+
+    console.log("PASSWORD UPDATED ✅");
+
+    return res.status(200).json({
+      message: "Password updated successfully"
+    });
+
+  } catch (error) {
+    console.log("ERROR ❌:", error.message);
+
+    return res.status(400).json({
+      message: "Invalid or expired token"
+    });
+  }
+};
+
+// blog add

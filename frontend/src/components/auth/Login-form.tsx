@@ -3,10 +3,12 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
+// import { Phone } from "lucide-react";
 
 
 interface FormData {
   email: string;
+  phone: string;
   password: string;
 }
 
@@ -15,6 +17,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     email: "",
+    phone: "",
     password: "",
   });
   const navigate = useNavigate();
@@ -48,7 +51,7 @@ export default function LoginForm() {
         password: formData.password,
       };
       const result = await login(credentials);
-      setFormData({ email: "", password: "" });
+      setFormData({ email: "", phone: "", password: "" });
       if (result.success) {
         navigate("/"); // or wherever you want to redirect after login
       }
@@ -118,6 +121,13 @@ export default function LoginForm() {
           className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           onChange={handleChange}
         />
+        <input
+          type="number"
+          name="phone"
+          required
+          placeholder="Phone Number" className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          onChange={handleChange}
+        />
 
         <input
           type="password"
@@ -127,6 +137,9 @@ export default function LoginForm() {
           className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           onChange={handleChange}
         />
+        <p className="text-red-500 text-sm font-semibold text-end cursor-pointer" onClick={() => navigate('/forget-password')}>
+          Forget password?
+        </p>
 
         <button
           type="submit"

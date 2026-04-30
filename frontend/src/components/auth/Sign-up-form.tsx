@@ -4,11 +4,13 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../hooks/useAuth";
+// import { Phone } from "lucide-react";
 
 interface FormData {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   password: string;
 }
 
@@ -18,6 +20,7 @@ export default function SignUpForm() {
     firstName: "",
     lastName: "",
     email: "",
+    phone: "",
     password: "",
   });
   const navigate = useNavigate();
@@ -25,28 +28,28 @@ export default function SignUpForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password.length < 6) {
-      toast.error("password must be greater that 6 character");
-      return;
-    }
-    if (formData.firstName.length < 2) {
-      toast.error("name must be atleast 2 character");
-      return;
-    }
-    if (formData.lastName.length < 2) {
-      toast.error("name must be atleast 2 character");
-      return;
-    }
-    if (formData.email.trim() === "") {
-      toast.error("must have email");
-      return;
-    }
+    // if (formData.password.length < 6) {
+    //   toast.error("password must be greater that 6 character");
+    //   return;
+    // }
+    // if (formData.firstName.length < 2) {
+    //   toast.error("name must be atleast 2 character");
+    //   return;
+    // }
+    // if (formData.lastName.length < 2) {
+    //   toast.error("name must be atleast 2 character");
+    //   return;
+    // }
+    // if (formData.email.trim() === "") {
+    //   toast.error("must have email");
+    //   return;
+    // }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast("Please enter a valid email address");
-      return;
-    }
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailRegex.test(formData.email)) {
+    //   toast("Please enter a valid email address");
+    //   return;
+    // }
     setIsLoading(true);
 
     try {
@@ -54,6 +57,7 @@ export default function SignUpForm() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
+        phone: formData.phone,
         password: formData.password,
       };
       const result = await signup(credentials);
@@ -61,6 +65,7 @@ export default function SignUpForm() {
         firstName: "",
         lastName: "",
         email: "",
+        phone: "",
         password: "",
       });
       if (result.success) {
@@ -81,6 +86,7 @@ export default function SignUpForm() {
       [e.target.name]: e.target.value,
     }));
   };
+  console.log(formData);
 
   return (
     <div className="bg-white/90 border border-blue-500 mt-28 backdrop-blur-sm rounded-3xl p-8 shadow-xl transform transition-all duration-300 hover:shadow-2xl">
@@ -130,6 +136,7 @@ export default function SignUpForm() {
             placeholder="First name"
             required
             className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            value={formData.firstName}
             onChange={handleChange}
           />
           <input
@@ -138,6 +145,7 @@ export default function SignUpForm() {
             placeholder="Last Name"
             required
             className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            value={formData.lastName}
             onChange={handleChange}
           />
         </div>
@@ -148,6 +156,16 @@ export default function SignUpForm() {
           placeholder="E-mail"
           required
           className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          value={formData.email}
+          onChange={handleChange}
+        />
+        <input
+          type="number"
+          name="phone"
+          placeholder="Phone Number"
+          required
+          className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          value={formData.phone}
           onChange={handleChange}
         />
 
@@ -157,6 +175,7 @@ export default function SignUpForm() {
           placeholder="Password"
           required
           className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+          value={formData.password}
           onChange={handleChange}
         />
 

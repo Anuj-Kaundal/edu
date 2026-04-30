@@ -17,6 +17,8 @@ import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminLogin from "../pages/admin/AdminLogin";
 import AdminProtectedRoute from "../components/auth/AdminProtectedRoute";
 import CertificateDetail from "../pages/certificate/CertificateDetail";
+import ForgetPassword from "../components/auth/ForgetPassword";
+import ResetPassword from "../components/auth/ResetPassword";
 
 export const routes: RouteObject[] = [
   {
@@ -72,6 +74,10 @@ export const routes: RouteObject[] = [
         ),
       },
       {
+        path:"/reset-password/:id/:token",
+        element:<ResetPassword/>
+      },
+      {
         path: "courses/:courseId",
         element: <CourseDetails />,
       },
@@ -91,6 +97,10 @@ export const routes: RouteObject[] = [
       //   path: "certificate",
       //   element: <Certificate />,
       // },
+      {
+        path: "forget-password",
+        element: <ForgetPassword/>
+      }
     ],
   },
   {

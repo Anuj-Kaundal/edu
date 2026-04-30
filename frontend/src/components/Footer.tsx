@@ -66,8 +66,7 @@ export default function Footer() {
             </li>
             <li>
               <a
-                href="https://www.facebook.com/share/a6ob9vX4d6uEAd3B/?mibextid=qi2Omg
-"
+                href="https://www.facebook.com/share/a6ob9vX4d6uEAd3B/?mibextid=qi2Omg"
                 className="hover:text-blue-500"
                 target="_blank"
               >

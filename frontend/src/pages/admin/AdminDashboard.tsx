@@ -5,6 +5,7 @@ import axios from "axios";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import toast, { Toaster } from "react-hot-toast";
+import { RiBloggerFill } from "react-icons/ri";
 import {
   FiDownload,
   FiChevronLeft,
@@ -33,6 +34,8 @@ import { FaFileSignature } from "react-icons/fa";
 import OfferLetter from "./OfferLetter";
 import CertificateForm from "./uploadCertificate/Certificate";
 import Coupon from "./Coupon";
+import { div } from "framer-motion/client";
+import Blog from "./Blog";
 
 // Types
 interface EnrollmentStats {
@@ -607,6 +610,7 @@ const AdminDashboard: React.FC = () => {
       { id: "payments", label: "payment Success", icon: FiBarChart2 },
       { id: "certificate", label: "certificate upload", icon: FiUpload },
       { id: "discount", label: "create offer", icon: FiTag },
+      { id: "blog", label:"Blog", icon: RiBloggerFill }
     ],
     []
   );
@@ -1779,6 +1783,13 @@ const AdminDashboard: React.FC = () => {
             <Coupon />
           </div>
         );
+      }
+      case "blog": {
+        return(
+          <div>
+            <Blog/>
+          </div>
+        )
       }
 
       default:
