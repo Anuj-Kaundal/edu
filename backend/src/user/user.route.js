@@ -29,6 +29,7 @@ router.put("/update-profile", protectRoute, updateProfile);
 router.get("/check", protectRoute, checkAuth);
 router.get("/get-all-users", getAllUser);
 router.post("/forget-password", forgetPassword);
-router.post("/reset-password", resetPassword);
+// router.post("/reset-password", resetPassword);
+router.post("/reset-password/:id/:token", resetPassword);
 
 export default router;

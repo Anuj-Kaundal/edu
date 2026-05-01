@@ -212,52 +212,41 @@ export const forgetPassword = async (req, res) => {
 };
 
 // reset password
-export const resetPassword = async(req, res) => {
+export const resetPassword = async (req, res) => {
   console.log("RESET API HIT ✅");
 
   const { id, token } = req.params;
   const { password } = req.body;
 
-  console.log("ID:", id);
-  console.log("TOKEN:", token);
-  console.log("NEW PASSWORD:", password);
-
   try {
     // 🔍 Find user
     const user = await userSchema.findById(id);
-
     if (!user) {
-      console.log("❌ User not found");
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found ❌" });
     }
 
-    // 🔐 Create secret
+    // 🔐 Verify token
     const secret = process.env.JWT_SECRET + user.password;
-
-    // 🔥 Verify token
     jwt.verify(token, secret);
-    console.log("TOKEN VERIFIED ✅");
 
-    // 🔐 Hash password
+    // 🔐 Hash new password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 👉 Update password
     user.password = hashedPassword;
     await user.save();
 
-    console.log("PASSWORD UPDATED ✅");
-
     return res.status(200).json({
-      message: "Password updated successfully"
+      message: "Password updated successfully ✅",
     });
 
   } catch (error) {
     console.log("ERROR ❌:", error.message);
-
     return res.status(400).json({
-      message: "Invalid or expired token"
+      message: "Invalid or expired token ❌",
     });
   }
 };
 
+// 🔗 ROUTE (IMPORTANT)
 // blog add

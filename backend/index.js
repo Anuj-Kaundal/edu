@@ -20,6 +20,7 @@ import multer from "multer";
 import fs from "fs";
 import blog from "./src/blog/blog.model.js"
 // import { image } from "pdfkit";
+import userRoutes from "./src/user/user.route.js"
 dotenv.config();
 const app = express();
 console.log(process.env.JWT_SECRET);
@@ -70,19 +71,22 @@ app.post('/blog', upload.single("image"), async (req, res) => {
 
     const result = await cloudinary.uploader.upload(req.file.path);
 
-    const { blogdate, blogcategory, blogtitle, authorname, description } = req.body;
+    const { image, title, author, url, excerpt, metaTitle, metaDescription, categories, description } = req.body;
 
-    if (!blogtitle || !description) {
+    if (!title || !author) {
       return res.status(400).json({ error: "Title and description required" });
     }
 
     const addBlog = await blog.create({
       image: result.secure_url,
-      blogdate,
-      blogcategory,
-      blogtitle,
-      authorname,
-      description,
+      title,
+      author,
+      url,
+      excerpt,
+      metaTitle,
+      metaDescription,
+      categories,
+      description
     });
 
     fs.unlinkSync(req.file.path);
@@ -108,6 +112,9 @@ app.get('/showblog', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// 🔥 IMPORTANT
+app.use("/", userRoutes);
+
 dbConnect().then(() => {
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

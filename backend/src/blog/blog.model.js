@@ -2,11 +2,14 @@ import mongoose from "mongoose";
 
 const blogSchema = new mongoose.Schema({
   image: String,
-  blogdate: String,
-  blogcategory: String,
-  blogtitle: String,
-  authorname: String,
-  description: String,
-}, { timestamps: true });
+  title: String,
+  author: String,
+  url: String,
+  excerpt: String,
+  metaTitle: String,
+  metaDescription:String,
+  categories:String,
+  description:String
+});
 
 export default mongoose.model("Blog", blogSchema);
