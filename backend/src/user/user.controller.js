@@ -5,7 +5,7 @@ import userSchema from "./user.model.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 export const signup = async (req, res) => {
-  const { firstName, lastName, email,phone, password } = req.body;
+  const { firstName, lastName, email, phone, password } = req.body;
   try {
     if ((!firstName, !lastName || !email || !phone || !password)) {
       return res.status(400).json({ message: "All fields are required" });
@@ -52,6 +52,42 @@ export const signup = async (req, res) => {
   }
 };
 
+// export const login = async (req, res) => {
+//   const { email, password } = req.body;
+//   try {
+//     const user = await User.findOne({ email });
+//     if (!user) {
+//       return res.status(400).json({ success: false, message: "no user found" });
+//     }
+
+//     const isPasswordCorrect = await bcrypt.compare(password, user.password);
+//     if (!isPasswordCorrect) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Invalid credentials" });
+//     }
+
+//     generateToken(user._id, res);
+//     res.cookie("token", token, {
+//       httpOnly: true,
+//       secure: false, // Localhost ke liye false
+//       sameSite: "lax", // Browser blocks 'none' on localhost
+//       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 din
+//     });
+//     res.status(200).json({
+//       success: true,
+//       _id: user._id,
+//       fullName: user.fullName,
+//       email: user.email,
+//       phone: user.phone,
+//       profilePic: user.profilePic,
+//     });
+//   } catch (error) {
+//     console.log("Error in login controller", error.message);
+//     res.status(500).json({ success: false, message: "Internal Server Error" });
+//   }
+// };
+
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -62,14 +98,25 @@ export const login = async (req, res) => {
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid credentials" });
+      return res.status(400).json({ success: false, message: "Invalid credentials" });
     }
 
-    generateToken(user._id, res);
+    // 1. Token generate karein aur variable mein store karein
+    // Note: Agar generateToken khud cookie set karta hai, toh niche wali res.cookie line hatayein
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
-    res.status(200).json({
+    // 2. Cookie set karein
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // Production mein true, dev mein false
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // 3. Response bhejien (Ek hi baar res.json hona chahiye)
+    return res.status(200).json({
       success: true,
       _id: user._id,
       fullName: user.fullName,
@@ -77,9 +124,10 @@ export const login = async (req, res) => {
       phone: user.phone,
       profilePic: user.profilePic,
     });
+
   } catch (error) {
     console.log("Error in login controller", error.message);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 

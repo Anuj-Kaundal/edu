@@ -36,7 +36,8 @@ import CertificateForm from "./uploadCertificate/Certificate";
 import Coupon from "./Coupon";
 import { div } from "framer-motion/client";
 import Blog from "./Blog";
-
+import News from "./News";
+import Event from "./Event";
 // Types
 interface EnrollmentStats {
   _id: string;
@@ -610,7 +611,9 @@ const AdminDashboard: React.FC = () => {
       { id: "payments", label: "payment Success", icon: FiBarChart2 },
       { id: "certificate", label: "certificate upload", icon: FiUpload },
       { id: "discount", label: "create offer", icon: FiTag },
-      { id: "blog", label:"Blog", icon: RiBloggerFill }
+      { id: "blog", label:"Blog", icon: RiBloggerFill },
+      { id: "news", label:"News", icon: RiBloggerFill },
+      { id: "event", label:"Event", icon: RiBloggerFill }
     ],
     []
   );
@@ -1788,6 +1791,20 @@ const AdminDashboard: React.FC = () => {
         return(
           <div>
             <Blog/>
+          </div>
+        )
+      }
+      case "news": {
+        return(
+          <div>
+            <News/>
+          </div>
+        )
+      }
+      case "event": {
+        return(
+          <div>
+            <Event/>
           </div>
         )
       }

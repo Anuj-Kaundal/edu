@@ -21,6 +21,7 @@ const resetPassword = async (e) => {
       email: data.email
     });
     alert('Reset Password Email Sent!!');
+    navigate("/login"); // navigate to login page
     console.log("Password reset link sent:", response.data);
   } catch (error) {
     console.error("Error resetting password:", error);

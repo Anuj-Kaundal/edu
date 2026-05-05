@@ -19,36 +19,22 @@ import AdminProtectedRoute from "../components/auth/AdminProtectedRoute";
 import CertificateDetail from "../pages/certificate/CertificateDetail";
 import ForgetPassword from "../components/auth/ForgetPassword";
 import ResetPassword from "../components/auth/ResetPassword";
+import ChangePassword from "../pages/profile/ChangePassword";
 
 export const routes: RouteObject[] = [
+  // ✅ MAIN LAYOUT (Navbar yaha hoga)
   {
     path: "/",
     element: <Layout />,
     children: [
-      {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: "session-book",
-        element: <Book />,
-      },
-      {
-        path: "contact-us",
-        element: <Contact />,
-      },
-      {
-        path: "about-us",
-        element: <AboutUs />,
-      },
-      {
-        path: "courses",
-        element: <Courses />,
-      },
-      {
-        path: "internships",
-        element: <Internships />,
-      },
+      { index: true, element: <Home /> },
+      { path: "session-book", element: <Book /> },
+      { path: "contact-us", element: <Contact /> },
+      { path: "about-us", element: <AboutUs /> },
+      { path: "courses", element: <Courses /> },
+      { path: "internships", element: <Internships /> },
+      {path: "change-password", element: <ChangePassword/>},
+
       {
         path: "profile",
         element: (
@@ -57,66 +43,58 @@ export const routes: RouteObject[] = [
           </PrivateRoute>
         ),
       },
-      {
-        path: "login",
-        element: (
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        ),
-      },
-      {
-        path: "signup",
-        element: (
-          <PublicRoute>
-            <Signup />
-          </PublicRoute>
-        ),
-      },
-      {
-        path:"/reset-password/:id/:token",
-        element:<ResetPassword/>
-      },
-      {
-        path: "courses/:courseId",
-        element: <CourseDetails />,
-      },
-      {
-        path: "internships/:internshipId",
-        element: <InternshipDetail />,
-      },
-      {
-        path: "payment/success",
-        element: <PaymentSuccess />,
-      },
-      {
-        path: "*",
-        element: <NotFound />,
-      },
-      // {
-      //   path: "certificate",
-      //   element: <Certificate />,
-      // },
-      {
-        path: "forget-password",
-        element: <ForgetPassword/>
-      }
+
+      { path: "courses/:courseId", element: <CourseDetails /> },
+      { path: "internships/:internshipId", element: <InternshipDetail /> },
+      { path: "payment/success", element: <PaymentSuccess /> },
+      
+      { path: "*", element: <NotFound /> },
     ],
   },
+
+  // ❌ AUTH PAGES (NO Navbar)
   {
-    path: "admin",
+    path: "/login",
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: "/signup",
+    element: (
+      <PublicRoute>
+        <Signup />
+      </PublicRoute>
+    ),
+  },
+  {
+    path: "/forget-password",
+    element: <ForgetPassword />,
+  },
+  {
+    path: "/reset-password/:id/:token",
+    element: <ResetPassword />,
+  },
+
+  // ✅ ADMIN
+  {
+    path: "/admin",
     element: <AdminLogin />,
   },
   {
-    path: "certificate/:id",
-    element: <CertificateDetail />,
-  },
-  {
-    path: "admin/dashboard",
+    path: "/admin/dashboard",
     element: (
       <AdminProtectedRoute>
         <AdminDashboard />
       </AdminProtectedRoute>
     ),
+  },
+
+  // ✅ OTHER
+  {
+    path: "/certificate/:id",
+    element: <CertificateDetail />,
   },
 ];

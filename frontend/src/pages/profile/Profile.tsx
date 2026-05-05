@@ -5,7 +5,7 @@ import { updateProfile } from "../../api/services";
 import CallingIcon from "../../components/socialContact/Call";
 import WhatsappIcon from "../../components/socialContact/Whatsapp";
 import Certificate from "../certificate/Certificate";
-
+import { Link } from "react-router-dom";
 // import courseImages from "../../assets/courses/index";
 const courseImages: Record<string, { default: string }> = import.meta.glob(
   "../../assets/courses/*.webp",
@@ -139,44 +139,45 @@ const Profile = () => {
             </div>
             <button
               onClick={() => setActiveTab("profile")}
-              className={`font-semibold w-full text-left px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${
-                activeTab === "profile"
+              className={`font-semibold w-full text-left px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${activeTab === "profile"
                   ? "bg-blue-100 text-blue-600"
                   : "hover:bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               Profile
             </button>
             <button
               onClick={() => setActiveTab("enrolled-courses")}
-              className={`font-semibold w-full text-left px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${
-                activeTab === "enrolled-courses"
+              className={`font-semibold w-full text-left px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${activeTab === "enrolled-courses"
                   ? "bg-blue-100 text-blue-600"
                   : "hover:bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               Enrolled Courses
             </button>
             <button
               onClick={() => setActiveTab("enrolled-internships")}
-              className={`font-semibold w-full text-left px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${
-                activeTab === "enrolled-internships"
+              className={`font-semibold w-full text-left px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${activeTab === "enrolled-internships"
                   ? "bg-blue-100 text-blue-600"
                   : "hover:bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               Enrolled Internships
             </button>
             <button
               onClick={() => setActiveTab("verify-certificates")}
-              className={`font-semibold w-full text-left px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${
-                activeTab === "verify-certificates"
+              className={`font-semibold w-full text-left px-4 py-2 rounded-lg transition-colors text-sm md:text-base ${activeTab === "verify-certificates"
                   ? "bg-blue-100 text-blue-600"
                   : "hover:bg-gray-100 text-gray-600"
-              }`}
+                }`}
             >
               Verify Certificates
             </button>
+            <Link to="/change-password">
+              <button className="w-full text-left px-4 py-2 rounded-lg transition-colors text-sm md:text-base hover:text-blue-500 text-gray-700 font-semibold">
+                Change Password
+              </button>
+            </Link>
             <button
               className="w-full text-left px-4 py-2 rounded-lg transition-colors text-sm md:text-base hover:text-blue-500 text-gray-700 font-semibold"
               onClick={logout}
@@ -211,9 +212,8 @@ const Profile = () => {
                     </label>
                     <input
                       type="text"
-                      className={`w-full text-gray-700 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base ${
-                        !isEditing ? "bg-gray-100" : ""
-                      }`}
+                      className={`w-full text-gray-700 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base ${!isEditing ? "bg-gray-100" : ""
+                        }`}
                       placeholder="First name"
                       name="firstName"
                       value={userInfo.firstName}
@@ -227,9 +227,8 @@ const Profile = () => {
                     </label>
                     <input
                       type="text"
-                      className={`w-full text-gray-700 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base ${
-                        !isEditing ? "bg-gray-100" : ""
-                      }`}
+                      className={`w-full text-gray-700 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base ${!isEditing ? "bg-gray-100" : ""
+                        }`}
                       placeholder="Last name"
                       name="lastName"
                       value={userInfo.lastName}
@@ -245,9 +244,8 @@ const Profile = () => {
                   </label>
                   <input
                     type="tel"
-                    className={`w-full text-gray-700 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base ${
-                      !isEditing ? "bg-gray-100" : ""
-                    }`}
+                    className={`w-full text-gray-700 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base ${!isEditing ? "bg-gray-100" : ""
+                      }`}
                     placeholder="Mobile number"
                     name="phoneNumber"
                     value={userInfo.phoneNumber}
@@ -262,9 +260,8 @@ const Profile = () => {
                   </label>
                   <input
                     type="email"
-                    className={`w-full text-gray-700 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base ${
-                      !isEditing ? "bg-gray-100" : ""
-                    }`}
+                    className={`w-full text-gray-700 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm md:text-base ${!isEditing ? "bg-gray-100" : ""
+                      }`}
                     placeholder="Email Address"
                     name="email"
                     value={userInfo.email}

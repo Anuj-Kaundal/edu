@@ -19,10 +19,13 @@ import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 import fs from "fs";
 import blog from "./src/blog/blog.model.js"
+import news from "./src/news/news.model.js"
+import event from "./src/event/event.model.js"
 // import { image } from "pdfkit";
 import userRoutes from "./src/user/user.route.js"
 dotenv.config();
 const app = express();
+app.use(cookieParser());
 console.log(process.env.JWT_SECRET);
 app.use(
   cors({
@@ -112,6 +115,162 @@ app.get('/showblog', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// add news
+app.post('/news', upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required" });
+    }
+
+    const result = await cloudinary.uploader.upload(req.file.path);
+
+    const { image, title, author, url, date, tags, content, categories, description } = req.body;
+
+    if (!title || !description) {
+      return res.status(400).json({ error: "Title and description required" });
+    }
+
+    const addNews = await news.create({
+      image: result.secure_url,
+      title,
+      url,
+      description,
+      author,
+      categories,
+      date,
+      tags,
+      content
+    });
+
+    fs.unlinkSync(req.file.path);
+
+    res.status(201).json({
+      message: "News added successfully",
+      addNews
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// show news
+app.get('/shownew', async (req, res) => {
+  try {
+    const showNews = await news.find().sort({ createdAt: -1 });
+
+    res.status(200).json(showNews); // ✅ ARRAY bhejo
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//add event
+app.post('/event', upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "Image is required" });
+    }
+
+    const result = await cloudinary.uploader.upload(req.file.path);
+
+    const { image, title, author, url, date, tags, content, categories, description } = req.body;
+
+    if (!title || !description) {
+      return res.status(400).json({ error: "Title and description required" });
+    }
+
+    const addEvent = await event.create({
+      image: result.secure_url,
+      title,
+      url,
+      description,
+      author,
+      categories,
+      date,
+      tags,
+      content
+    });
+
+    fs.unlinkSync(req.file.path);
+
+    res.status(201).json({
+      message: "Event added successfully",
+      addEvent
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// show event
+app.get('/showevent', async (req, res) => {
+  try {
+    const showEvent = await event.find().sort({ createdAt: -1 });
+
+    res.status(200).json(showEvent); // ✅ ARRAY bhejo
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// change password
+
+app.post("/api/change-password", async (req, res) => {
+  try {
+    const token = req.cookies.token;
+
+    if (!token) {
+      return res.status(401).json({ message: "You have to Login First" });
+    }
+
+    // 1. Verify Token
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ message: "Session expire" });
+    }
+
+    // 2. Body se data nikalein
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // 3. Find User
+    const user = await userSchema.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({ message: " No User Found" });
+    }
+
+    // 4. Current Password Compare karein
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current Password is not match" });
+    }
+
+    // 5. New Password Hash karein
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // 6. Update aur Save
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password Change successfully ✅" });
+
+  } catch (error) {
+    console.error("Change Password Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
 // 🔥 IMPORTANT
 app.use("/", userRoutes);
 
