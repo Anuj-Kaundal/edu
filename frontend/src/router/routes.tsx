@@ -23,6 +23,9 @@ import ChangePassword from "../pages/profile/ChangePassword";
 import Blog from "../components/Blog";
 import News from "../components/News"
 import Event from "../components/Event";
+import BlogDetails from "../components/BlogDetails";
+import NewsDetails from "../components/NewsDetails";
+import EventDetails from "../components/EventDetails";
 
 export const routes: RouteObject[] = [
   // ✅ MAIN LAYOUT (Navbar yaha hoga)
@@ -36,10 +39,13 @@ export const routes: RouteObject[] = [
       { path: "about-us", element: <AboutUs /> },
       { path: "courses", element: <Courses /> },
       { path: "internships", element: <Internships /> },
-      {path: "change-password", element: <ChangePassword/>},
-      {path: "blog", element: <Blog/>},
-      {path: "news", element:<News/>},
-      {path: "event", element:<Event/>},
+      { path: "change-password", element: <ChangePassword /> },
+      { path: "blog", element: <Blog /> },
+      { path: "news", element: <News /> },
+      { path: "event", element: <Event /> },
+      { path: "/blogdetails/:id", element: <BlogDetails /> },
+      { path: "/newsdetails/:id", element: <NewsDetails /> },
+      { path: "/eventdetails/:id", element: <EventDetails /> },
 
       {
         path: "profile",
@@ -53,7 +59,7 @@ export const routes: RouteObject[] = [
       { path: "courses/:courseId", element: <CourseDetails /> },
       { path: "internships/:internshipId", element: <InternshipDetail /> },
       { path: "payment/success", element: <PaymentSuccess /> },
-      
+
       { path: "*", element: <NotFound /> },
     ],
   },

@@ -271,6 +271,24 @@ app.post("/api/change-password", async (req, res) => {
   }
 });
 
+// blog details show
+app.get("/blog/:id", async (req, res) => {
+  const blogDetails = await blog.findById(req.params.id);
+  res.json(blogDetails);
+});
+
+// news details show
+app.get("/news/:id", async (req, res) => {
+  const newsDetails = await news.findById(req.params.id);
+  res.json(newsDetails);
+});
+
+// event details show
+app.get("/events/:id", async (req, res) => {
+  const eventDetails = await event.findById(req.params.id);
+  res.json(eventDetails);
+});
+
 // 🔥 IMPORTANT
 app.use("/", userRoutes);
 

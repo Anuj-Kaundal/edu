@@ -34,12 +34,12 @@ function Event() {
         ]
     };
 
-    // ✅ FETCH EVENTS (Enhanced Parsing)
+    // ✅ FETCH EVENTS
     const fetchEvent = async () => {
         try {
             const res = await fetch("http://localhost:5000/showevent");
             const data = await res.json();
-            
+
             const formattedData = data.map(item => {
                 let finalCategories = [];
                 if (typeof item.categories === 'string') {
@@ -53,7 +53,7 @@ function Event() {
                 }
                 return { ...item, categories: finalCategories };
             });
-            
+
             setEventList(formattedData);
         } catch (err) {
             console.log("Fetch Error:", err);
@@ -155,17 +155,30 @@ function Event() {
                         </div>
 
                         <h1 className='text-lg font-semibold pt-2 pb-2'>Event Details</h1>
+
                         <label>Title *</label>
                         <input type="text" name="title" value={formData.title} onChange={handleChange} className='border p-2 rounded-lg' required />
-                        
+
                         <label>Author *</label>
                         <input type="text" name="author" value={formData.author} onChange={handleChange} className='border p-2 rounded-lg' required />
+
+                        {/* ✅ FIXED DESCRIPTION FIELD */}
+                        <label>Description *</label>
+                        <input
+                            type="text"
+                            name="description"
+                            value={formData.description}
+                            onChange={handleChange}
+                            className='border p-2 rounded-lg'
+                            required
+                        />
 
                         <label>Categories</label>
                         <div className="flex gap-2">
                             <input value={categoryInput} onChange={(e) => setCategoryInput(e.target.value)} className="border p-2 rounded-lg w-full" />
                             <button type="button" onClick={addCategory} className="bg-purple-500 text-white px-4 rounded-lg">Add</button>
                         </div>
+
                         <div className="flex flex-wrap gap-2 mt-2">
                             {formData.categories.map((cat, index) => (
                                 <span key={index} className="bg-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer" onClick={() => removeCategory(index)}>
@@ -195,7 +208,7 @@ function Event() {
                                 <img src={item.image} alt="event" className='w-full h-40 object-cover rounded-lg' />
                                 <h2 className='font-bold mt-2'>{item.title}</h2>
                                 <p className='text-sm text-gray-600'>{item.description}</p>
-                                
+
                                 <div className='flex flex-wrap gap-1 mt-2'>
                                     {Array.isArray(item.categories) && item.categories.map((cat, i) => (
                                         <span key={i} className='bg-gray-300 px-2 py-1 text-xs rounded'>
