@@ -20,6 +20,9 @@ import CertificateDetail from "../pages/certificate/CertificateDetail";
 import ForgetPassword from "../components/auth/ForgetPassword";
 import ResetPassword from "../components/auth/ResetPassword";
 import ChangePassword from "../pages/profile/ChangePassword";
+import Blog from "../components/Blog";
+import News from "../components/News"
+import Event from "../components/Event";
 
 export const routes: RouteObject[] = [
   // ✅ MAIN LAYOUT (Navbar yaha hoga)
@@ -34,6 +37,9 @@ export const routes: RouteObject[] = [
       { path: "courses", element: <Courses /> },
       { path: "internships", element: <Internships /> },
       {path: "change-password", element: <ChangePassword/>},
+      {path: "blog", element: <Blog/>},
+      {path: "news", element:<News/>},
+      {path: "event", element:<Event/>},
 
       {
         path: "profile",

@@ -2,7 +2,9 @@ import { LiaLinkedin } from "react-icons/lia";
 import logo from "../assets/logos/footer-logo.png";
 import { BsInstagram } from "react-icons/bs";
 import { FaFacebook } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 export default function Footer() {
+  const navigate = useNavigate()
   return (
     <footer className="mt-16 bg-gray-800 text-white py-10 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 text-center md:text-left">
@@ -29,6 +31,9 @@ export default function Footer() {
           <ul className="text-sm space-y-2">
             <li>Privacy Policy</li>
             <li>Terms and Conditions</li>
+            <li className="cursor-pointer" onClick={() => navigate('/blog')}>Blog</li>
+            <li className="cursor-pointer" onClick={() => navigate('/news')}>News</li>
+            <li className="cursor-pointer" onClick={() => navigate('/event')}>Event</li>
           </ul>
         </div>
 
