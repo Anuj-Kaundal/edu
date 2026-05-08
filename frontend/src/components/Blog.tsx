@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Search, Calendar, MoveUpRight } from "lucide-react";
+import { Search, Calendar } from "lucide-react";
 import Footer from "./Footer";
 import { useNavigate } from "react-router-dom";
 
 type BlogType = {
   _id: string;
   title: string;
+  date:String,
   excerpt: string;
   image: string;
   categories: string[] | string;
@@ -93,6 +94,7 @@ const Blog: React.FC = () => {
                     alt={blog.title}
                     className="w-full h-full object-fill group-hover:scale-105 transition"
                   />
+                  <span>{blog.date}</span>
                 </div>
 
                 {/* Content */}

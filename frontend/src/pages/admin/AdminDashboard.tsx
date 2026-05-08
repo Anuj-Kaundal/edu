@@ -6,6 +6,8 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import toast, { Toaster } from "react-hot-toast";
 import { RiBloggerFill } from "react-icons/ri";
+import { FaRegNewspaper } from "react-icons/fa";
+import { MdEventAvailable } from "react-icons/md";
 import {
   FiDownload,
   FiChevronLeft,
@@ -612,8 +614,8 @@ const AdminDashboard: React.FC = () => {
       { id: "certificate", label: "certificate upload", icon: FiUpload },
       { id: "discount", label: "create offer", icon: FiTag },
       { id: "blog", label:"Blog", icon: RiBloggerFill },
-      { id: "news", label:"News", icon: RiBloggerFill },
-      { id: "event", label:"Event", icon: RiBloggerFill }
+      { id: "news", label:"News", icon: FaRegNewspaper },
+      { id: "event", label:"Event", icon: MdEventAvailable }
     ],
     []
   );

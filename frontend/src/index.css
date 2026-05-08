@@ -27,3 +27,17 @@
     color: rgb(var(--foreground-rgb));
     background: rgb(var(--background-rgb));
   }
+  a{
+    color: rgba(0, 0, 255, 0.766);
+  }
+  /* Editor ki minimum height set karne ke liye */
+.ck-editor__editable_inline {
+    min-height: 400px;
+}
+table,tr,td{
+  padding: 10px;
+  border: 2px solid rgba(128, 128, 128, 0.352);
+}
+td{
+  padding-right: 72px;
+}

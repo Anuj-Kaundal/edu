@@ -94,7 +94,7 @@ const Event: React.FC = () => {
 
                                 {/* Content Preview */}
                                 <div
-                                    className="prose max-w-none mt-5 space-y-5"
+                                    className="prose max-w-none mt-5 space-y-5 line-clamp-4"
                                     dangerouslySetInnerHTML={{
                                         __html: event.content
                                     }}

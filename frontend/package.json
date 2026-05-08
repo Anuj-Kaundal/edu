@@ -10,7 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^41.4.2",
+    "@ckeditor/ckeditor5-react": "^11.1.2",
+    "@toast-ui/editor-plugin-table-merged-cell": "^3.1.0",
+    "@toast-ui/react-editor": "^3.2.3",
     "axios": "^1.15.2",
+    "codemirror": "^6.0.2",
     "framer-motion": "^11.16.0",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.4",

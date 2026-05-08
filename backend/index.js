@@ -66,6 +66,7 @@ cloudinary.config({
 
 const upload = multer({ dest: "uploads/" });
 
+// add blogs
 app.post('/blog', upload.single("image"), async (req, res) => {
   try {
     if (!req.file) {
@@ -74,7 +75,7 @@ app.post('/blog', upload.single("image"), async (req, res) => {
 
     const result = await cloudinary.uploader.upload(req.file.path);
 
-    const { image, title, author, url, excerpt, metaTitle, metaDescription, categories, description } = req.body;
+    const { image, title, author, url, date, excerpt, metaTitle, metaDescription, categories, description } = req.body;
 
     if (!title || !author) {
       return res.status(400).json({ error: "Title and description required" });
@@ -85,6 +86,7 @@ app.post('/blog', upload.single("image"), async (req, res) => {
       title,
       author,
       url,
+      date,
       excerpt,
       metaTitle,
       metaDescription,
@@ -276,11 +278,39 @@ app.get("/blog/:id", async (req, res) => {
   const blogDetails = await blog.findById(req.params.id);
   res.json(blogDetails);
 });
+// fetch all blog
+app.get("/blog", async (req, res) => {
+  try {
+    const allBlog = await blog.find(); // .find() bina ID ke saara data nikaalta hai
+    res.json(allBlog);
+  } catch (error) {
+    res.status(500).json({ message: "Server error while fetching all news" });
+  }
+});
 
 // news details show
 app.get("/news/:id", async (req, res) => {
   const newsDetails = await news.findById(req.params.id);
   res.json(newsDetails);
+});
+// 1. Saari news fetch karne ka route
+app.get("/news", async (req, res) => {
+  try {
+    const allNews = await news.find(); // .find() bina ID ke saara data nikaalta hai
+    res.json(allNews);
+  } catch (error) {
+    res.status(500).json({ message: "Server error while fetching all news" });
+  }
+});
+
+// 2. Single news ka route (Jo aapne pehle se likha hai)
+app.get("/news/:id", async (req, res) => {
+  try {
+    const newsDetails = await news.findById(req.params.id);
+    res.json(newsDetails);
+  } catch (error) {
+    res.status(404).json({ message: "News not found" });
+  }
 });
 
 // event details show
@@ -288,6 +318,161 @@ app.get("/events/:id", async (req, res) => {
   const eventDetails = await event.findById(req.params.id);
   res.json(eventDetails);
 });
+
+// fetch all event
+app.get("/event", async (req, res) => {
+  try {
+    const allEvent = await event.find(); // .find() bina ID ke saara data nikaalta hai
+    res.json(allEvent);
+  } catch (error) {
+    res.status(500).json({ message: "Server error while fetching all news" });
+  }
+});
+
+// delete blog
+app.delete('/deleteblog/:id', async (req, res) => {
+  const blogDelete = await blog.findByIdAndDelete(req.params.id);
+  res.json(blogDelete);
+});
+
+// update blog
+app.put('/updateblog/:id', upload.single("image"), async (req, res) => {
+
+  try {
+
+    const updatedData = {
+      title: req.body.title,
+      author: req.body.author,
+      url: req.body.url,
+      date: req.body.date,
+      excerpt: req.body.excerpt,
+      metaTitle: req.body.metaTitle,
+      metaDescription: req.body.metaDescription,
+      categories: req.body.categories,
+      description: req.body.description
+    };
+
+    // if new image uploaded
+    if (req.file) {
+
+      updatedData.image =
+        `http://localhost:5000/uploads/${req.file.filename}`;
+    }
+
+    const blogUpdate =
+      await blog.findByIdAndUpdate(
+        req.params.id,
+        updatedData,
+        { new: true }
+      );
+
+    res.json(blogUpdate);
+
+  } catch (error) {
+
+    res.status(500).json({
+      error: error.message
+    });
+  }
+}
+);
+
+// delete news
+app.delete('/deletenews/:id', async (req, res) => {
+  const newsDelete = await news.findByIdAndDelete(req.params.id);
+  res.json(newsDelete);
+});
+
+// update news
+app.put('/updatenews/:id', upload.single("image"), async (req, res) => {
+
+  try {
+
+    const updateData = {
+      title: req.body.title,
+      url: req.body.url,
+      description: req.body.description,
+      author: req.body.author,
+      categories: req.body.categories,
+      date: req.body.date,
+      tags: req.body.tags,
+      content: req.body.content,
+    };
+
+    // AGAR NEW IMAGE AAYE TABHI UPDATE KARO
+    if (req.file) {
+      updateData.image = req.file.path;
+    }
+
+    const updatedNews = await news.findByIdAndUpdate(
+      req.params.id,
+      updateData,
+      { new: true }
+    );
+
+    res.json(updatedNews);
+
+  } catch (error) {
+
+    console.log(error);
+
+    res.status(500).json({
+      error: "Update failed"
+    });
+
+  }
+
+});
+
+// delete event
+app.delete('/deleteevent/:id', async (req, res) => {
+  const eventDelete = await event.findByIdAndDelete(req.params.id);
+  res.json(eventDelete);
+});
+
+// update event
+app.put(
+  '/updateevent/:id',
+  upload.single("image"),
+  async (req, res) => {
+
+    try {
+
+      const updateData = {
+        title: req.body.title,
+        url: req.body.url,
+        description: req.body.description,
+        author: req.body.author,
+        categories: req.body.categories,
+        date: req.body.date,
+        tags: req.body.tags,
+        content: req.body.content,
+      };
+
+      // IMAGE OPTIONAL
+      if (req.file) {
+        updateData.image = req.file.path;
+      }
+
+      const updatedEvent = await event.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        { new: true }
+      );
+
+      res.json(updatedEvent);
+
+    } catch (error) {
+
+      console.log(error);
+
+      res.status(500).json({
+        error: "Update failed"
+      });
+
+    }
+
+  });
 
 // 🔥 IMPORTANT
 app.use("/", userRoutes);

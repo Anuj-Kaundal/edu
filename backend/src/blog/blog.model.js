@@ -5,6 +5,7 @@ const blogSchema = new mongoose.Schema({
   title: String,
   author: String,
   url: String,
+  date:String,
   excerpt: String,
   metaTitle: String,
   metaDescription:String,

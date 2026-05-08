@@ -9,6 +9,7 @@ type NewsType = {
   title: string;
   excerpt: string;
   image: string;
+  content: String,
   categories?: string[] | string;
   createdAt?: string;
   author?: string;
@@ -81,7 +82,7 @@ const News: React.FC = () => {
             return (
               <Link key={item._id} to={`/newsdetails/${item._id}`}>
                 <div className="bg-white rounded-lg shadow hover:shadow-xl transition cursor-pointer overflow-hidden">
-                  
+
                   {/* Image */}
                   <img
                     src={item.image || "https://via.placeholder.com/600x400"}
@@ -91,15 +92,15 @@ const News: React.FC = () => {
 
                   {/* Content */}
                   <div className="p-6">
-                    
+
                     {/* Date */}
-                    <div className="flex items-center text-gray-400 text-xs mb-2">
+                    {/* <div className="flex items-center text-gray-400 text-xs mb-2">
                       <Calendar className="w-4 h-4 mr-1" />
                       {item.createdAt
                         ? new Date(item.createdAt).toDateString()
                         : "Recent"}
-                    </div>
-
+                    </div> */}
+                    <p className="text-sm text-gray-400">{item.date}</p>
                     {/* Title */}
                     <h2 className="text-xl font-bold mb-2 text-gray-800">
                       {item.title}
@@ -111,18 +112,23 @@ const News: React.FC = () => {
                     </p>
 
                     {/* Excerpt */}
-                    <p className="text-gray-500 text-sm mb-4">
+                    <p className="text-yellow-500 text-sm mb-4">
                       {item.excerpt}
                     </p>
+                    <div
+                      className="text-gray-600 max-w-none mt-5 space-y-5 line-clamp-4"
+                      dangerouslySetInnerHTML={{
+                        __html: item.content,
+                      }}
+                    ></div>
 
                     {/* Categories */}
                     <div className="flex gap-2 flex-wrap">
                       {categories.map((cat, i) => (
                         <span
                           key={i}
-                          className={`${
-                            tagColors[i % tagColors.length]
-                          } px-3 py-1 text-xs rounded-full`}
+                          className={`${tagColors[i % tagColors.length]
+                            } px-3 py-1 text-xs rounded-full`}
                         >
                           {cat}
                         </span>
