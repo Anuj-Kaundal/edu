@@ -70,7 +70,7 @@ const Event: React.FC = () => {
                             <img
                                 src={event.image}
                                 alt=""
-                                className="w-full h-60 object-cover"
+                                className="w-full h-60 object-fill"
                             />
 
                             {/* Content */}
@@ -79,7 +79,7 @@ const Event: React.FC = () => {
                                 {/* Date */}
                                 <div className="flex items-center text-gray-400 text-xs mb-2">
                                     <Calendar className="w-4 h-4 mr-1" />
-                                    {event.date || "Upcoming"}
+                                    {event.date}
                                 </div>
 
                                 {/* Title */}

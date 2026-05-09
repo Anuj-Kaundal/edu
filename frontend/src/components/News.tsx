@@ -81,25 +81,16 @@ const News: React.FC = () => {
 
             return (
               <Link key={item._id} to={`/newsdetails/${item._id}`}>
-                <div className="bg-white rounded-lg shadow hover:shadow-xl transition cursor-pointer overflow-hidden">
-
+                <div className="bg-white rounded-2xl shadow hover:shadow-xl transition overflow-hidden h-full flex flex-col">
                   {/* Image */}
                   <img
                     src={item.image || "https://via.placeholder.com/600x400"}
                     alt=""
-                    className="w-full h-60 object-cover"
+                    className="w-full h-60 object-fill"
                   />
 
                   {/* Content */}
                   <div className="p-6">
-
-                    {/* Date */}
-                    {/* <div className="flex items-center text-gray-400 text-xs mb-2">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      {item.createdAt
-                        ? new Date(item.createdAt).toDateString()
-                        : "Recent"}
-                    </div> */}
                     <p className="text-sm text-gray-400">{item.date}</p>
                     {/* Title */}
                     <h2 className="text-xl font-bold mb-2 text-gray-800">

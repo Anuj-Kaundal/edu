@@ -107,10 +107,10 @@ const BlogDetails = () => {
                         {/* LEFT: MAIN CONTENT */}
                         <main className="lg:w-2/3">
                             <article className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                                <img src={blog.image} alt={blog.title} className="w-full h-[450px] object-cover" />
+                                <img src={blog.image} alt={blog.title} className="w-full h-[450px] object-fill" />
 
                                 <div className="p-8 md:p-12">
-                                    <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+                                    <h1 className="text-xl md:text-3xl font-extrabold text-gray-900 mb-6 leading-tight">
                                         {blog.title}
                                     </h1>
 
@@ -149,7 +149,7 @@ const BlogDetails = () => {
                                             <button
                                                 key={i}
                                                 onClick={() => handleScroll(h.id)}
-                                                className="w-full text-left py-2.5 px-4 rounded-xl text-sm text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-all flex items-center gap-3 bg-transparent border-none cursor-pointer"
+                                                className="w-full text-left py-2.5 px-4 font-bold rounded-xl text-sm text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-all flex items-center gap-3 bg-transparent border-none cursor-pointer"
                                             >
                                                 <span className="w-1.5 h-1.5 rounded-full bg-gray-300"></span>
                                                 <span className="line-clamp-1">{h.text}</span>

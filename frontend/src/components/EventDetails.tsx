@@ -1,153 +1,295 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import { ChevronRight, Calendar, User, List, ArrowLeft, MapPin } from "lucide-react";
+import {
+    Calendar,
+    User,
+    List,
+    ArrowLeft,
+    MapPin
+} from "lucide-react";
 import Footer from "./Footer";
 
 const EventDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [event, setEvent] = useState(null);
-    const [allEvents, setAllEvents] = useState([]);
-    const [allBlogs, setAllBlogs] = useState([]);
+
+    const [event, setEvent] = useState<any>(null);
+    const [allEvents, setAllEvents] = useState<any[]>([]);
 
     useEffect(() => {
-        // 1. Fetch Single Event Data
-        axios.get(`http://localhost:5000/events/${id}`)
-            .then((res) => setEvent(res.data))
-            .catch(() => console.log("Error fetching event"));
+        // Fetch Current Event
+        axios
+            .get(`http://localhost:5000/events/${id}`)
+            .then((res) => {
+                console.log("CURRENT EVENT =>", res.data);
+                setEvent(res.data);
+            })
+            .catch((err) => console.log(err));
 
-        // 2. Fetch All Events for Related Section
-        axios.get("http://localhost:5000/events")
-            .then((res) => setAllEvents(res.data))
-            .catch(() => console.log("Error fetching all events"));
+        // Fetch All Events
+        axios
+            .get("http://localhost:5000/event")
+            .then((res) => {
+                console.log("ALL EVENTS =>", res.data);
+
+                // Handle every possible API structure
+                const eventsData =
+                    res.data.events ||
+                    res.data.data ||
+                    res.data;
+
+                setAllEvents(
+                    Array.isArray(eventsData)
+                        ? eventsData
+                        : []
+                );
+            })
+            .catch((err) => console.log(err));
+
     }, [id]);
 
-    // Loading State
-    if (!event)
+    // Loading
+    if (!event) {
         return (
-            <div className="flex justify-center items-center h-screen text-gray-400 font-medium animate-pulse">
-                Loading Event Details...
+            <div className="flex justify-center items-center h-screen text-gray-500">
+                Loading Event...
             </div>
         );
+    }
 
-    // --- NAVIGATION LOGIC (Heading extraction and ID injection) ---
+    // Hide Current Event
+    const relatedEvents = Array.isArray(allEvents)
+        ? allEvents.filter(
+            (item) =>
+                String(item._id || item.id) !==
+                String(event._id || event.id)
+        )
+        : [];
+
+    console.log("RELATED EVENTS =>", relatedEvents);
+
+    // Content + headings
     const rawContent = event.content || event.description || "";
-    const headings = [];
+    const headings: any[] = [];
 
-    // Yeh Regex HTML content ke andar <h2> aur <h3> tags mein ID inject karta hai
-    const contentWithIds = rawContent.replace(/<(h[23])>(.*?)<\/\1>/g, (match, tag, text) => {
-        const cleanText = text.replace(/<[^>]*>?/gm, ''); // HTML tags hatana text se
-        const headingId = cleanText.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "");
+    const contentWithIds = rawContent.replace(
+        /<(h[23])>(.*?)<\/\1>/g,
+        (match: any, tag: any, text: any) => {
+            const cleanText = text.replace(/<[^>]*>?/gm, "");
 
-        headings.push({ text: cleanText, id: headingId });
+            const headingId = cleanText
+                .toLowerCase()
+                .replace(/\s+/g, "-")
+                .replace(/[^\w-]/g, "");
 
-        // scroll-mt-24 class ensure karti hai ki header ke niche heading na chupe
-        return `<${tag} id="${headingId}" class="scroll-mt-24 font-bold text-gray-900 mt-8 mb-4">${text}</${tag}>`;
-    });
+            headings.push({
+                text: cleanText,
+                id: headingId
+            });
 
-    // Smooth Scroll function
-    const handleScroll = (elementId) => {
+            return `
+        <${tag}
+          id="${headingId}"
+          class="scroll-mt-24 font-bold text-gray-900 mt-8 mb-4"
+        >
+          ${text}
+        </${tag}>
+      `;
+        }
+    );
+
+    // Smooth Scroll
+    const handleScroll = (elementId: string) => {
         const element = document.getElementById(elementId);
+
         if (element) {
             window.scrollTo({
-                top: element.offsetTop - 100, // Header ke liye gap
+                top: element.offsetTop - 100,
                 behavior: "smooth"
             });
         }
     };
 
-    // fetch reated events
-    axios.get("http://localhost:5000/event")
-        .then((res) => {
-            setAllNews(res.data); // Ab ye data fetch karega aur Related News dikhayega!
-        });
     return (
         <>
             <div className="bg-[#F8FAFC] min-h-screen pb-20">
+
                 <div className="h-24"></div>
 
                 <div className="max-w-7xl mx-auto px-4 md:px-6">
-                    {/* Top Back Navigation */}
+
+                    {/* Back Button */}
                     <button
                         onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors mb-8 group cursor-pointer"
+                        className="flex items-center gap-2 text-gray-500 hover:text-blue-600 mb-8"
                     >
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-sm font-semibold">Back to Events</span>
+                        <ArrowLeft className="w-4 h-4" />
+                        <span>Back to Events</span>
                     </button>
 
                     <div className="flex flex-col lg:flex-row gap-12">
 
-                        {/* LEFT COLUMN: Main Content */}
+                        {/* LEFT CONTENT */}
                         <main className="lg:w-2/3">
-                            <article className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+
+                            <article className="bg-white rounded-3xl shadow-sm overflow-hidden">
+
+                                {/* Image */}
                                 <div className="w-full h-[400px] overflow-hidden">
-                                    <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                                    <img
+                                        src={event.image}
+                                        alt={event.title}
+                                        className="w-full h-full object-fill"
+                                    />
                                 </div>
 
+                                {/* Content */}
                                 <div className="p-8 md:p-12">
-                                    <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+
+                                    {/* Title */}
+                                    <h1 className="text-xl md:text-3xl font-extrabold text-gray-900 mb-6 leading-tight">
                                         {event.title}
                                     </h1>
 
-                                    {/* Event Meta Bar */}
-                                    <div className="flex flex-wrap items-center gap-6 text-gray-400 text-sm mb-8 pb-8 border-b border-gray-50">
+                                    {/* Meta */}
+                                    <div className="flex flex-wrap items-center gap-6 text-sm mb-8 pb-8 border-b">
+
                                         <div className="flex items-center gap-2">
                                             <User className="w-4 h-4 text-orange-500" />
-                                            <span className="font-medium text-gray-700">{event.organizer || "Admin"}</span>
+                                            <span>
+                                                {event.organizer || "Admin"}
+                                            </span>
                                         </div>
+
                                         <div className="flex items-center gap-2">
                                             <Calendar className="w-4 h-4 text-orange-500" />
-                                            <span className="font-medium">{event.date}</span>
+                                            <span>{event.date}</span>
                                         </div>
-                                        {event.location && (
+
+                                        {/* {event.location && (
                                             <div className="flex items-center gap-2">
                                                 <MapPin className="w-4 h-4 text-orange-500" />
-                                                <span className="font-medium text-gray-700">{event.location}</span>
+                                                <span>{event.location}</span>
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
 
-                                    {/* Main Body Content with IDs injected */}
+                                    {/* Body */}
                                     <div
-                                        className="prose prose-orange max-w-none text-gray-700 leading-relaxed 
-                                        prose-p:mb-5 prose-headings:scroll-mt-24"
-                                        dangerouslySetInnerHTML={{ __html: contentWithIds }}
+                                        className="prose max-w-none text-gray-700"
+                                        dangerouslySetInnerHTML={{
+                                            __html: contentWithIds
+                                        }}
                                     />
+
                                 </div>
                             </article>
                         </main>
 
-                        {/* RIGHT COLUMN: Table of Contents */}
+                        {/* RIGHT SIDEBAR */}
                         <aside className="lg:w-1/3">
-                            <div className="sticky top-28 space-y-6">
-                                <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2 bg-orange-50 rounded-lg">
-                                            <List className="w-5 h-5 text-blue-600" />
-                                        </div>
-                                        <h3 className="font-bold text-gray-900 text-lg">Table of Contents</h3>
-                                    </div>
 
-                                    <nav className="space-y-1">
-                                        {headings.map((h, i) => (
+                            <div className="sticky top-28 bg-white p-8 rounded-3xl shadow-sm">
+
+                                <div className="flex items-center gap-3 mb-6">
+                                    <List className="w-5 h-5 text-blue-600" />
+
+                                    <h3 className="font-bold text-lg">
+                                        Table of Contents
+                                    </h3>
+                                </div>
+
+                                <nav className="space-y-2">
+
+                                    {headings.length > 0 ? (
+                                        headings.map((h, i) => (
                                             <button
                                                 key={i}
-                                                onClick={() => handleScroll(h.id)}
-                                                className="w-full text-left py-2.5 px-4 rounded-xl text-sm text-gray-500 hover:bg-blue-50 hover:text-blue-600 transition-all flex items-center gap-3 group cursor-pointer"
+                                                onClick={() =>
+                                                    handleScroll(h.id)
+                                                }
+                                                className="block w-full text-left px-4 py-2 font-bold text-gray-500 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition"
                                             >
-                                                <span className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-blue-600 transition-colors"></span>
-                                                <span className="line-clamp-1">{h.text}</span>
+                                                {h.text}
                                             </button>
-                                        ))}
-                                        {headings.length === 0 && (
-                                            <p className="text-gray-400 text-sm italic">No sections found in this article.</p>
-                                        )}
-                                    </nav>
-                                </div>
+                                        ))
+                                    ) : (
+                                        <p className="text-gray-400 text-sm">
+                                            No sections found.
+                                        </p>
+                                    )}
+
+                                </nav>
                             </div>
                         </aside>
+                    </div>
+
+                    {/* OTHER EVENTS */}
+                    <div className="mt-20">
+
+                        <h2 className="text-3xl font-bold mb-10">
+                            Other Events
+                        </h2>
+
+                        {relatedEvents.length > 0 ? (
+
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                                {relatedEvents.map((item) => (
+
+                                    <div
+                                        key={item._id || item.id}
+                                        onClick={() =>
+                                            navigate(
+                                                `/events/${item._id || item.id}`
+                                            )
+                                        }
+                                        className="bg-white rounded-2xl overflow-hidden shadow hover:shadow-lg transition duration-300 cursor-pointer"
+                                    >
+
+                                        {/* Image */}
+                                        <img
+                                            src={item.image}
+                                            alt={item.title}
+                                            className="w-full h-56 object-cover"
+                                        />
+
+                                        {/* Content */}
+                                        <div className="p-5">
+
+                                            <h3 className="text-xl font-semibold mb-3 line-clamp-2">
+                                                {item.title}
+                                            </h3>
+
+                                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                                <Calendar className="w-4 h-4" />
+                                                <span>{item.date}</span>
+                                            </div>
+                                            <div
+                                                className="prose max-w-none text-gray-700 line-clamp-3"
+                                                dangerouslySetInnerHTML={{
+                                                    __html: contentWithIds
+                                                }}
+                                            />
+
+                                        </div>
+                                    </div>
+
+                                ))}
+
+                            </div>
+
+                        ) : (
+
+                            <div className="bg-white rounded-2xl p-10 text-center shadow-sm">
+                                <p className="text-gray-500 text-lg">
+                                    No other events found.
+                                </p>
+                            </div>
+
+                        )}
+
                     </div>
                 </div>
             </div>

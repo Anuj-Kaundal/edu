@@ -29,6 +29,7 @@
   }
   a{
     color: rgba(0, 0, 255, 0.766);
+    text-decoration: none;
   }
   /* Editor ki minimum height set karne ke liye */
 .ck-editor__editable_inline {

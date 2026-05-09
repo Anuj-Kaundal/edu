@@ -293,11 +293,22 @@ app.get("/news/:id", async (req, res) => {
   const newsDetails = await news.findById(req.params.id);
   res.json(newsDetails);
 });
+
 // 1. Saari news fetch karne ka route
 app.get("/news", async (req, res) => {
   try {
     const allNews = await news.find(); // .find() bina ID ke saara data nikaalta hai
     res.json(allNews);
+  } catch (error) {
+    res.status(500).json({ message: "Server error while fetching all news" });
+  }
+});
+
+// fetch all event
+app.get("/event", async (req, res) => {
+  try {
+    const allEvent = await event.find(); // .find() bina ID ke saara data nikaalta hai
+    res.json(allEvent);
   } catch (error) {
     res.status(500).json({ message: "Server error while fetching all news" });
   }
