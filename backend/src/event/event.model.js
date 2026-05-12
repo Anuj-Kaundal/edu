@@ -5,9 +5,11 @@ const newsSchema = new mongoose.Schema({
   title: String,
   url: String,
   description:String,
-  author: String,
+  organizer: String,
   categories:String,
   date:String,
+  time:String,
+  venue:String,
   tags:String,
   content:String
 });

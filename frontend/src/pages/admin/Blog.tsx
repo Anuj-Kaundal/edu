@@ -3,9 +3,11 @@ import axios from "axios";
 import "react-quill/dist/quill.snow.css";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-
+import { IoClose } from "react-icons/io5";
+import { IoIosCloseCircle } from "react-icons/io";
 function Blog() {
     const editorConfiguration = {
+        extraPlugins: [MyUploadAdapterPlugin],
         toolbar: {
             items: [
                 'heading',
@@ -40,6 +42,27 @@ function Blog() {
             ]
         }
     };
+    function MyUploadAdapterPlugin(editor) {
+        editor.plugins.get('FileRepository').createUploadAdapter = loader => {
+            return {
+                upload: async () => {
+                    const file = await loader.file;
+
+                    return new Promise(resolve => {
+                        const reader = new FileReader();
+
+                        reader.onload = () => {
+                            resolve({
+                                default: reader.result
+                            });
+                        };
+
+                        reader.readAsDataURL(file);
+                    });
+                }
+            };
+        };
+    }
     const [activeTab, setActiveTab] = useState("create");
     const [expandedId, setExpandedId] = useState(null);
     const [editId, setEditId] = useState(null);
@@ -58,7 +81,6 @@ function Blog() {
         title: "",
         author: "",
         url: "",
-        date: "",
         excerpt: "",
         metaTitle: "",
         metaDescription: "",
@@ -90,7 +112,7 @@ function Blog() {
 
         setCategoryInput("");
     };
-      // CONTENT CHANGE (FIXED)
+    // CONTENT CHANGE (FIXED)
     const handleContentChange = (event, editor) => {
         const data = editor.getData();
         setFormData((prev) => ({
@@ -184,30 +206,7 @@ function Blog() {
         const objectUrl = URL.createObjectURL(file);
 
         img.src = objectUrl;
-
         img.onload = () => {
-
-            const requiredWidth = 1920;
-            const requiredHeight = 600;
-
-            // IMAGE DIMENSION VALIDATION
-            if (
-                img.width !== requiredWidth ||
-                img.height !== requiredHeight
-            ) {
-
-                alert(
-                    `Please upload image size ${requiredWidth}x${requiredHeight}px`
-                );
-
-                URL.revokeObjectURL(objectUrl);
-
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = "";
-                }
-
-                return;
-            }
 
             setPreview(objectUrl);
 
@@ -216,6 +215,38 @@ function Blog() {
                 image: file
             }));
         };
+
+        // img.onload = () => {
+
+        //     const requiredWidth = 1920;
+        //     const requiredHeight = 600;
+
+        //     // IMAGE DIMENSION VALIDATION
+        //     if (
+        //         img.width !== requiredWidth ||
+        //         img.height !== requiredHeight
+        //     ) {
+
+        //         alert(
+        //             `Please upload image size ${requiredWidth}x${requiredHeight}px`
+        //         );
+
+        //         URL.revokeObjectURL(objectUrl);
+
+        //         if (fileInputRef.current) {
+        //             fileInputRef.current.value = "";
+        //         }
+
+        //         return;
+        //     }
+
+        //     setPreview(objectUrl);
+
+        //     setFormData((prev) => ({
+        //         ...prev,
+        //         image: file
+        //     }));
+        // };
     };
 
     // FETCH BLOGS
@@ -256,9 +287,6 @@ function Blog() {
             title: blog.title || "",
             author: blog.author || "",
             url: blog.url || "",
-            date: blog.date
-                ? blog.date.split("T")[0]
-                : "",
             excerpt: blog.excerpt || "",
             metaTitle: blog.metaTitle || "",
             metaDescription: blog.metaDescription || "",
@@ -405,8 +433,8 @@ function Blog() {
                 <h1
                     onClick={() => setActiveTab("create")}
                     className={`cursor-pointer ${activeTab === "create"
-                            ? "text-blue-600 border-b-2 border-blue-600"
-                            : ""
+                        ? "text-blue-600 border-b-2 border-blue-600"
+                        : ""
                         }`}
                 >
                     Create Blog
@@ -415,8 +443,8 @@ function Blog() {
                 <h1
                     onClick={() => setActiveTab("show")}
                     className={`cursor-pointer ${activeTab === "show"
-                            ? "text-blue-600 border-b-2 border-blue-600"
-                            : ""
+                        ? "text-blue-600 border-b-2 border-blue-600"
+                        : ""
                         }`}
                 >
                     Show Blogs
@@ -461,21 +489,41 @@ function Blog() {
 
                                 {/* PREVIEW */}
                                 {preview && (
-                                    <img
-                                        src={preview}
-                                        alt="Blog preview"
-                                        className="w-full h-72 object-cover mt-4 rounded-lg"
-                                    />
+                                    <div className="relative mt-4 w-full">
+
+                                        <img
+                                            src={preview}
+                                            alt="Blog preview"
+                                            className="w-full h-72 object-cover rounded-lg"
+                                        />
+
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+
+                                                setPreview("");
+
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    image: null
+                                                }));
+
+                                                if (fileInputRef.current) {
+                                                    fileInputRef.current.value = "";
+                                                }
+                                            }}
+                                            className="absolute top-2 right-2"
+                                        >
+                                            <IoIosCloseCircle className="text-red-700 bg-white rounded-full p-0 text-4xl" />
+                                        </button>
+
+                                    </div>
                                 )}
 
                                 <span className="text-sm text-gray-600 mt-3">
                                     PNG , JPG , WEBP or GIF (max.5MB)
                                 </span>
                             </div>
-
-                            <p className="text-sm text-gray-500 mt-2">
-                                Recommended banner size: 1920 × 600 px
-                            </p>
                         </div>
 
                         <h1 className="text-lg font-semibold pt-2 pb-2">
@@ -516,19 +564,6 @@ function Blog() {
                             readOnly
                             className="border p-2 rounded-lg bg-gray-100"
                         />
-
-                        {/* DATE */}
-                        <label>Date *</label>
-
-                        <input
-                            type="date"
-                            name="date"
-                            value={formData.date}
-                            onChange={handleChange}
-                            className="border p-2 rounded-lg"
-                            required
-                        />
-
                         {/* EXCERPT */}
                         <label>Excerpt *</label>
 
@@ -549,18 +584,17 @@ function Blog() {
                             value={formData.metaTitle}
                             onChange={handleChange}
                             className="border p-2 rounded-lg"
+                            maxLength={60}
                         />
 
                         {/* META DESCRIPTION */}
                         <label>Meta Description</label>
 
-                        <input
-                            type="text"
-                            name="metaDescription"
+                        <textarea name="metaDescription"
                             value={formData.metaDescription}
                             onChange={handleChange}
-                            className="border p-2 rounded-lg"
-                        />
+                            className="border p-2 rounded-lg h-40"
+                            maxLength={160}></textarea>
 
                         {/* CATEGORY */}
                         <label>Categories</label>
@@ -573,13 +607,19 @@ function Blog() {
                                 onChange={(e) =>
                                     setCategoryInput(e.target.value)
                                 }
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        addCategory();
+                                    }
+                                }}
                                 className="border p-2 rounded-lg w-full"
                             />
 
                             <button
                                 type="button"
                                 onClick={addCategory}
-                                className="bg-purple-500 text-white px-4 rounded-lg"
+                                className="bg-blue-500 text-white px-4 rounded-lg"
                             >
                                 Add
                             </button>
@@ -594,9 +634,9 @@ function Blog() {
                                     onClick={() =>
                                         removeCategory(index)
                                     }
-                                    className="bg-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer"
+                                    className="bg-gray-300 px-3 py-1 rounded-full text-lg cursor-pointer flex gap-1 justify-center items-center"
                                 >
-                                    {cat} ❌
+                                    {cat}<IoClose className="text-xl mt-1" />
                                 </span>
                             ))}
                         </div>
@@ -611,14 +651,6 @@ function Blog() {
                                 editor={ClassicEditor}
                                 data={formData.description}
                                 onReady={editor => {
-                                    // HEADING SHORTCUTS
-                                    const levels = [1, 2, 3, 4, 5, 6];
-                                    levels.forEach(level => {
-                                        editor.keystrokes.set(`Ctrl+Alt+${level}`, (data, stop) => {
-                                            editor.execute('heading', { value: `heading${level}` });
-                                            stop();
-                                        });
-                                    });
                                 }}
                                 config={editorConfiguration}
                                 onChange={handleContentChange}
@@ -694,21 +726,23 @@ function Blog() {
                                 </div>
 
                                 {/* DATE */}
-                                <p className="text-xs mt-2 text-gray-500">
-                                    {blog.date
-                                        ? new Date(
-                                            blog.date
-                                        ).toLocaleDateString()
-                                        : "No Date"}
-                                </p>
+                                <div className="flex items-center text-gray-400 text-xs mb-3">
+                                    {blog.createdAt
+                                        ? new Date(blog.createdAt).toLocaleDateString("en-GB", {
+                                            day: "2-digit",
+                                            month: "short",
+                                            year: "numeric",
+                                        })
+                                        : ""}
+                                </div>
 
                                 {/* EXCERPT */}
                                 <div>
 
                                     <p
                                         className={`text-sm text-gray-600 ${expandedId === blog._id
-                                                ? ""
-                                                : "line-clamp-3"
+                                            ? ""
+                                            : "line-clamp-3"
                                             }`}
                                     >
                                         {blog.excerpt}

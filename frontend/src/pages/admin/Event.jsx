@@ -6,7 +6,9 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 function Event() {
     const [addData, setAddData] = useState('');
+
     const editorConfiguration = {
+        extraPlugins: [MyUploadAdapterPlugin],
         toolbar: {
             items: [
                 'heading',
@@ -19,11 +21,18 @@ function Event() {
                 'fontColor', 'fontBackgroundColor',
                 'insertTable',
                 'uploadImage',
-                'mediaEmbed',
+                // 'mediaEmbed',
                 'outdent', 'indent',
                 '|',
                 'link', 'insertTable', 'blockQuote', 'undo', 'redo'
             ],
+            simpleUpload: {
+                uploadUrl: 'https://example.com/your-upload-endpoint',
+                headers: {
+                    'X-CSRF-TOKEN': 'CSFR-Token',
+                    Authorization: 'Bearer <JSON Web Token>'
+                }
+            },
             link: {
                 addTargetToExternalLinks: true,
                 defaultProtocol: 'https://'
@@ -41,6 +50,27 @@ function Event() {
             ]
         }
     };
+    function MyUploadAdapterPlugin(editor) {
+        editor.plugins.get('FileRepository').createUploadAdapter = loader => {
+            return {
+                upload: async () => {
+                    const file = await loader.file;
+
+                    return new Promise(resolve => {
+                        const reader = new FileReader();
+
+                        reader.onload = () => {
+                            resolve({
+                                default: reader.result
+                            });
+                        };
+
+                        reader.readAsDataURL(file);
+                    });
+                }
+            };
+        };
+    }
     const [activeTab, setActiveTab] = useState("create");
     const [expandedId, setExpandedId] = useState(null);
     const [editId, setEditId] = useState(null);
@@ -50,10 +80,12 @@ function Event() {
         title: "",
         url: "",
         description: "",
-        author: "",
-        categories: [],
+        organizer: "",
+        // categories: [],
+        // tags: "",
         date: "",
-        tags: "",
+        time: "",
+        venue: "",
         content: ""
     };
 
@@ -181,30 +213,7 @@ function Event() {
         const objectUrl = URL.createObjectURL(file);
 
         img.src = objectUrl;
-
         img.onload = () => {
-
-            const requiredWidth = 1920;
-            const requiredHeight = 600;
-
-            // IMAGE DIMENSION VALIDATION
-            if (
-                img.width !== requiredWidth ||
-                img.height !== requiredHeight
-            ) {
-
-                alert(
-                    `Please upload image size ${requiredWidth}x${requiredHeight}px`
-                );
-
-                URL.revokeObjectURL(objectUrl);
-
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = "";
-                }
-
-                return;
-            }
 
             setPreview(objectUrl);
 
@@ -213,6 +222,38 @@ function Event() {
                 image: file
             }));
         };
+
+        // img.onload = () => {
+
+        //     const requiredWidth = 1920;
+        //     const requiredHeight = 600;
+
+        //     // IMAGE DIMENSION VALIDATION
+        //     if (
+        //         img.width !== requiredWidth ||
+        //         img.height !== requiredHeight
+        //     ) {
+
+        //         alert(
+        //             `Please upload image size ${requiredWidth}x${requiredHeight}px`
+        //         );
+
+        //         URL.revokeObjectURL(objectUrl);
+
+        //         if (fileInputRef.current) {
+        //             fileInputRef.current.value = "";
+        //         }
+
+        //         return;
+        //     }
+
+        //     setPreview(objectUrl);
+
+        //     setFormData((prev) => ({
+        //         ...prev,
+        //         image: file
+        //     }));
+        // };
     };
 
     // INPUT CHANGE
@@ -300,9 +341,6 @@ function Event() {
             description: item.description || "",
             author: item.author || "",
             categories: item.categories || [],
-            date: item.date
-                ? item.date.split("T")[0]
-                : "",
             tags: item.tags || "",
             content: item.content || ""
         });
@@ -472,211 +510,169 @@ function Event() {
             {/* CREATE EVENT */}
             {activeTab === "create" && (
 
-                <div className="w-full max-w-4xl p-5 rounded-lg shadow-md">
+                <div className="min-h-screen bg-[#f8f9fa] p-6 text-[#334155]">
 
-                    <form
-                        ref={formRef}
-                        className="flex flex-col gap-3"
-                        onSubmit={handleSubmit}
-                    >
+                    <form ref={formRef} onSubmit={handleSubmit} className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                        {/* IMAGE */}
-                        <div className="border-b border-gray-400 pb-5">
+                        {/* LEFT COLUMN: Main Details */}
+                        <div className="lg:col-span-2 space-y-8">
 
-                            <div className="border-2 border-dashed border-gray-400 rounded-xl p-10 flex flex-col items-center bg-gray-100">
+                            {/* Event Details Card */}
+                            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                                <h2 className="text-lg font-bold mb-6">Event Details</h2>
 
-                                <label className="cursor-pointer flex items-center gap-3">
+                                <div className="space-y-6">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-sm font-medium">Event Title <span className="text-red-500">*</span></label>
+                                        <input
+                                            type="text"
+                                            name="title"
+                                            placeholder="Enter event title..."
+                                            value={formData.title}
+                                            onChange={handleChange}
+                                            className="w-full border border-gray-200 p-3 rounded-lg focus:ring-1 outline-none placeholder:text-gray-300"
+                                            required
+                                        />
+                                    </div>
 
-                                    <span className="bg-white px-4 py-2 border rounded-md shadow-sm">
-                                        Choose File
-                                    </span>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-sm font-medium italic text-gray-600"># URL Slug <span className="text-red-500">*</span></label>
+                                        <div className="flex border border-gray-200 rounded-lg overflow-hidden focus-within:ring-1 transition-all">
+                                            {/* <span className="bg-gray-50 px-4 py-3 text-gray-500 border-r border-gray-200 text-sm">/events/</span> */}
+                                            <input
+                                                type="text"
+                                                name="url"
+                                                value={formData.url}
+                                                readOnly
+                                                className="w-full p-3 bg-white outline-none text-gray-400 text-sm"
+                                                required
+                                            />
+                                        </div>
+                                    </div>
 
-                                    <span className="text-gray-600">
-                                        {formData.image
-                                            ? formData.image.name
-                                            : "No file chosen"}
-                                    </span>
-
-                                    <input
-                                        type="file"
-                                        name="image"
-                                        ref={fileInputRef}
-                                        className="hidden"
-                                        onChange={handleImageChange}
-                                    />
-                                </label>
-
-                                {/* PREVIEW */}
-                                {preview && (
-                                    <img
-                                        src={preview}
-                                        alt="Event preview"
-                                        className="w-full h-72 object-cover mt-4 rounded-lg"
-                                    />
-                                )}
-
-                                <span className="text-sm text-gray-600 mt-3">
-                                    PNG , JPG , WEBP or GIF (max.5MB)
-                                </span>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-sm font-medium">Short Description <span className="text-red-500">*</span></label>
+                                        <textarea
+                                            name="description"
+                                            value={formData.description}
+                                            onChange={handleChange}
+                                            placeholder="Brief description for event cards and previews..."
+                                            className="w-full border border-gray-200 p-3 rounded-lg h-32 focus:ring-1 outline-none resize-none placeholder:text-gray-300"
+                                            required
+                                        />
+                                    </div>
+                                </div>
                             </div>
 
-                            <p className="text-sm text-gray-500 mt-2">
-                                Recommended banner size: 1920 × 600 px
-                            </p>
+                            {/* Event Content Card */}
+                            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                                <h2 className="text-lg font-bold mb-2">Event Content <span className="text-red-500">*</span></h2>
+                                <p className="text-sm text-gray-500 mb-6">Create detailed content for your event page with rich formatting, images, and more.</p>
+                                <div className="rounded-lg overflow-hidden border border-gray-200">
+                                    <CKEditor
+                                        key={editorKey}
+                                        editor={ClassicEditor}
+                                        data={formData.content}
+                                        config={editorConfiguration}
+                                        onChange={handleContentChange}
+                                    />
+                                </div>
+                            </div>
                         </div>
 
-                        <h1 className="text-lg font-semibold pt-2 pb-2">
-                            Event Details
-                        </h1>
+                        {/* RIGHT COLUMN: Sidebar */}
+                        <div className="space-y-8">
 
-                        {/* TITLE */}
-                        <label>Title *</label>
+                            {/* Event Information Card */}
+                            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                                <h2 className="text-lg font-bold mb-6">Event Information</h2>
 
-                        <input
-                            type="text"
-                            name="title"
-                            value={formData.title}
-                            onChange={handleChange}
-                            className="border p-2 rounded-lg"
-                            required
-                        />
+                                <div className="space-y-5">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-sm font-medium">Event Date <span className="text-red-500">*</span></label>
+                                        <input
+                                            type="date"
+                                            name="date"
+                                            value={formData.date}
+                                            onChange={handleChange}
+                                            className="w-full border border-gray-200 p-3 rounded-lg text-sm text-gray-500"
+                                        />
+                                    </div>
 
-                        {/* AUTHOR */}
-                        <label>Author *</label>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-sm font-medium">Event Time <span className="text-red-500">*</span></label>
+                                        <input
+                                            type="time"
+                                            name="time"
+                                            value={formData.time}
+                                            onChange={handleChange}
+                                            className="w-full border border-gray-200 p-3 rounded-lg text-sm text-gray-500"
+                                        />
+                                    </div>
 
-                        <input
-                            type="text"
-                            name="author"
-                            value={formData.author}
-                            onChange={handleChange}
-                            className="border p-2 rounded-lg"
-                            required
-                        />
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-sm font-medium">Venue <span className="text-red-500">*</span></label>
+                                        <input
+                                            type="text"
+                                            name="venue"
+                                            placeholder="Event venue or location"
+                                            value={formData.venue}
+                                            onChange={handleChange}
+                                            className="w-full border border-gray-200 p-3 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 outline-none placeholder:text-gray-300"
+                                        />
+                                    </div>
 
-                        {/* URL */}
-                        <label>Custom URL *</label>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-sm font-medium">Organizer</label>
+                                        <input
+                                            type="text"
+                                            name="organizer"
+                                            value={formData.organizer}
+                                            onChange={handleChange}
+                                            className="w-full border border-gray-200 p-3 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 outline-none"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
 
-                        <input
-                            type="text"
-                            name="url"
-                            value={formData.url}
-                            readOnly
-                            className="border p-2 rounded-lg bg-gray-100"
-                            required
-                        />
+                            {/* Featured Image Card */}
+                            <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                                <h2 className="text-lg font-bold mb-6">Featured Image</h2>
+                                <div
+                                    onClick={() => fileInputRef.current.click()}
+                                    className="border-2 border-dashed border-gray-200 rounded-xl p-8 flex flex-col items-center justify-center bg-gray-50 cursor-pointer hover:bg-gray-100 transition-all min-h-[200px]"
+                                >
+                                    <input type="file" name="image" ref={fileInputRef} className="hidden" onChange={handleImageChange} />
 
-                        {/* DESCRIPTION */}
-                        <label>Description *</label>
+                                    {!preview ? (
+                                        <div className="text-center">
+                                            <div className="bg-gray-200 p-3 rounded-lg inline-block mb-3">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <p className="text-sm font-medium text-gray-600">Click to upload image</p>
+                                            <p className="text-xs text-gray-400 mt-1">PNG, JPG, WebP up to 5MB</p>
+                                        </div>
+                                    ) : (
+                                        <img src={preview} alt="Preview" className="w-full h-auto rounded-lg shadow-sm" />
+                                    )}
+                                </div>
+                            </div>
+                        </div>
 
-                        <textarea
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            className="border p-2 rounded-lg h-20"
-                            required
-                        />
+                        {/* Floating Submit Button (Bottom) */}
+                        <div className="lg:col-span-3 flex justify-center">
+                            <button className="bg-blue-500 hover:bg-blue-600 text-white p-2 w-60 rounded-lg mt-5">
 
-                        {/* CATEGORY */}
-                        <label>Categories</label>
-
-                        <div className="flex gap-2">
-
-                            <input
-                                value={categoryInput}
-                                onChange={(e) =>
-                                    setCategoryInput(
-                                        e.target.value
-                                    )
-                                }
-                                className="border p-2 rounded-lg w-full"
-                            />
-
-                            <button
-                                type="button"
-                                onClick={addCategory}
-                                className="bg-purple-500 text-white px-4 rounded-lg"
-                            >
-                                Add
+                                {editId
+                                    ? "Update Event"
+                                    : "Add Event"}
                             </button>
                         </div>
-
-                        {/* CATEGORY LIST */}
-                        <div className="flex flex-wrap gap-2 mt-2">
-
-                            {formData.categories.map(
-                                (cat, index) => (
-                                    <span
-                                        key={index}
-                                        className="bg-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer"
-                                        onClick={() =>
-                                            removeCategory(
-                                                index
-                                            )
-                                        }
-                                    >
-                                        {cat} ❌
-                                    </span>
-                                )
-                            )}
-                        </div>
-
-                        {/* DATE */}
-                        <label>Date</label>
-
-                        <input
-                            type="date"
-                            name="date"
-                            value={formData.date}
-                            onChange={handleChange}
-                            className="border p-2 rounded-lg"
-                        />
-
-                        {/* TAGS */}
-                        <label>Tags</label>
-
-                        <input
-                            type="text"
-                            name="tags"
-                            value={formData.tags}
-                            onChange={handleChange}
-                            className="border p-2 rounded-lg"
-                        />
-
-                        {/* CONTENT */}
-                        <label>Content *</label>
-
-                        <div className="bg-white rounded-lg">
-                            <CKEditor
-                                key={editorKey} // Reset key jab submit ho
-                                editor={ClassicEditor}
-                                data={formData.content}
-                                onReady={editor => {
-                                    // HEADING SHORTCUTS
-                                    const levels = [1, 2, 3, 4, 5, 6];
-                                    levels.forEach(level => {
-                                        editor.keystrokes.set(`Ctrl+Alt+${level}`, (data, stop) => {
-                                            editor.execute('heading', { value: `heading${level}` });
-                                            stop();
-                                        });
-                                    });
-                                }}
-                                config={editorConfiguration}
-                                onChange={handleContentChange}
-                            />
-                        </div>
-
-                        {/* SUBMIT */}
-                        <button className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg mt-5">
-
-                            {editId
-                                ? "Update Event"
-                                : "Submit"}
-                        </button>
-
                     </form>
                 </div>
             )}
-
             {/* SHOW EVENTS */}
             {activeTab === "show" && (
 

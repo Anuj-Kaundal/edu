@@ -75,7 +75,7 @@ app.post('/blog', upload.single("image"), async (req, res) => {
 
     const result = await cloudinary.uploader.upload(req.file.path);
 
-    const { image, title, author, url, date, excerpt, metaTitle, metaDescription, categories, description } = req.body;
+    const { image, title, author, url, excerpt, metaTitle, metaDescription, categories, description } = req.body;
 
     if (!title || !author) {
       return res.status(400).json({ error: "Title and description required" });
@@ -86,7 +86,6 @@ app.post('/blog', upload.single("image"), async (req, res) => {
       title,
       author,
       url,
-      date,
       excerpt,
       metaTitle,
       metaDescription,
@@ -178,7 +177,7 @@ app.post('/event', upload.single("image"), async (req, res) => {
 
     const result = await cloudinary.uploader.upload(req.file.path);
 
-    const { image, title, author, url, date, tags, content, categories, description } = req.body;
+    const { image, title, organizer, url, date, time, venue, content, description } = req.body;
 
     if (!title || !description) {
       return res.status(400).json({ error: "Title and description required" });
@@ -189,10 +188,12 @@ app.post('/event', upload.single("image"), async (req, res) => {
       title,
       url,
       description,
-      author,
-      categories,
+      organizer,
+      // categories,
       date,
-      tags,
+      time,
+      venue,
+      // tags,
       content
     });
 

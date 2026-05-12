@@ -102,16 +102,13 @@ const News: React.FC = () => {
                       By {item.author || "News Desk"}
                     </p>
 
-                    {/* Excerpt */}
-                    <p className="text-yellow-500 text-sm mb-4">
-                      {item.excerpt}
-                    </p>
-                    <div
+                    <p>{item.description.slice(0, 190)} ....</p>
+                    {/* <div
                       className="text-gray-600 max-w-none mt-5 space-y-5 line-clamp-4"
                       dangerouslySetInnerHTML={{
                         __html: item.content,
                       }}
-                    ></div>
+                    ></div> */}
 
                     {/* Categories */}
                     <div className="flex gap-2 flex-wrap">

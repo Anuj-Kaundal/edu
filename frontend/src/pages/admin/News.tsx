@@ -4,8 +4,11 @@ import axios from "axios";
 import "react-quill/dist/quill.snow.css";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { IoClose } from "react-icons/io5";
+import { IoIosCloseCircle } from "react-icons/io";
 function News() {
     const editorConfiguration = {
+        extraPlugins: [MyUploadAdapterPlugin],
         toolbar: {
             items: [
                 'heading',
@@ -40,6 +43,27 @@ function News() {
             ]
         }
     };
+    function MyUploadAdapterPlugin(editor) {
+        editor.plugins.get('FileRepository').createUploadAdapter = loader => {
+            return {
+                upload: async () => {
+                    const file = await loader.file;
+
+                    return new Promise(resolve => {
+                        const reader = new FileReader();
+
+                        reader.onload = () => {
+                            resolve({
+                                default: reader.result
+                            });
+                        };
+
+                        reader.readAsDataURL(file);
+                    });
+                }
+            };
+        };
+    }
     const [activeTab, setActiveTab] = useState("create");
     const [expandedId, setExpandedId] = useState(null);
 
@@ -54,7 +78,6 @@ function News() {
         description: "",
         author: "",
         categories: [],
-        date: "",
         tags: "",
         content: ""
     });
@@ -85,7 +108,7 @@ function News() {
             content: data
         }));
     };
-    
+
     // FETCH NEWS
     const fetchNews = async () => {
         try {
@@ -198,27 +221,7 @@ function News() {
         const objectUrl = URL.createObjectURL(file);
 
         img.src = objectUrl;
-
         img.onload = () => {
-            const requiredWidth = 1920;
-            const requiredHeight = 600;
-
-            if (
-                img.width !== requiredWidth ||
-                img.height !== requiredHeight
-            ) {
-                alert(
-                    `Please upload image size ${requiredWidth}x${requiredHeight}px`
-                );
-
-                URL.revokeObjectURL(objectUrl);
-
-                if (fileInputRef.current) {
-                    fileInputRef.current.value = "";
-                }
-
-                return;
-            }
 
             setPreview(objectUrl);
 
@@ -227,6 +230,35 @@ function News() {
                 image: file
             }));
         };
+
+        // img.onload = () => {
+        //     const requiredWidth = 1920;
+        //     const requiredHeight = 600;
+
+        //     if (
+        //         img.width !== requiredWidth ||
+        //         img.height !== requiredHeight
+        //     ) {
+        //         alert(
+        //             `Please upload image size ${requiredWidth}x${requiredHeight}px`
+        //         );
+
+        //         URL.revokeObjectURL(objectUrl);
+
+        //         if (fileInputRef.current) {
+        //             fileInputRef.current.value = "";
+        //         }
+
+        //         return;
+        //     }
+
+        //     setPreview(objectUrl);
+
+        //     setFormData((prev) => ({
+        //         ...prev,
+        //         image: file
+        //     }));
+        // };
     };
 
     // RESET FORM
@@ -238,7 +270,6 @@ function News() {
             description: "",
             author: "",
             categories: [],
-            date: "",
             tags: "",
             content: ""
         });
@@ -354,9 +385,6 @@ function News() {
                 typeof item.categories === "string"
                     ? JSON.parse(item.categories)
                     : item.categories || [],
-            date: item.date
-                ? item.date.split("T")[0]
-                : "",
             tags: item.tags || "",
             content: item.content || ""
         });
@@ -429,21 +457,41 @@ function News() {
 
                                 {/* PREVIEW */}
                                 {preview && (
-                                    <img
-                                        src={preview}
-                                        alt="News preview"
-                                        className="w-full h-72 object-cover mt-4 rounded-lg"
-                                    />
+                                    <div className="relative mt-4 w-full">
+
+                                        <img
+                                            src={preview}
+                                            alt="Blog preview"
+                                            className="w-full h-72 object-cover rounded-lg"
+                                        />
+
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+
+                                                setPreview("");
+
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    image: null
+                                                }));
+
+                                                if (fileInputRef.current) {
+                                                    fileInputRef.current.value = "";
+                                                }
+                                            }}
+                                            className="absolute top-2 right-2"
+                                        >
+                                            <IoIosCloseCircle className="text-red-700 bg-white rounded-full p-0 text-4xl" />
+                                        </button>
+
+                                    </div>
                                 )}
 
                                 <span className="text-sm text-gray-600 mt-3">
                                     PNG , JPG , WEBP or GIF (max.5MB)
                                 </span>
                             </div>
-
-                            <p className="text-sm text-gray-500 mt-2">
-                                Recommended banner size: 1920 × 600 px
-                            </p>
                         </div>
 
                         <h1 className="text-lg font-semibold pt-2 pb-2">
@@ -489,7 +537,7 @@ function News() {
                             name="description"
                             value={formData.description}
                             onChange={handleChange}
-                            className="border p-2 rounded-lg h-20"
+                            className="border p-2 rounded-lg h-40"
                             required
                         />
 
@@ -499,17 +547,25 @@ function News() {
                         <div className="flex gap-2">
 
                             <input
+                                type="text"
                                 value={categoryInput}
                                 onChange={(e) =>
                                     setCategoryInput(e.target.value)
                                 }
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        addCategory();
+                                    }
+                                }}
                                 className="border p-2 rounded-lg w-full"
                             />
+
 
                             <button
                                 type="button"
                                 onClick={addCategory}
-                                className="bg-purple-500 text-white px-4 rounded-lg"
+                                className="bg-blue-500 text-white px-4 rounded-lg"
                             >
                                 Add
                             </button>
@@ -521,23 +577,15 @@ function News() {
                             {formData.categories.map((cat, index) => (
                                 <span
                                     key={index}
-                                    className="bg-gray-300 px-3 py-1 rounded-full text-sm cursor-pointer"
-                                    onClick={() => removeCategory(index)}
+                                    onClick={() =>
+                                        removeCategory(index)
+                                    }
+                                    className="bg-gray-300 px-3 py-1 rounded-full text-lg cursor-pointer flex gap-1 justify-center items-center"
                                 >
-                                    {cat} ❌
+                                    {cat}<IoClose className="text-xl mt-1" />
                                 </span>
                             ))}
                         </div>
-
-                        {/* DATE */}
-                        <label>Date</label>
-                        <input
-                            type="date"
-                            name="date"
-                            value={formData.date}
-                            onChange={handleChange}
-                            className="border p-2 rounded-lg"
-                        />
 
                         {/* TAGS */}
                         <label>Tags</label>

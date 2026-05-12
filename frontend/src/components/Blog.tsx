@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 type BlogType = {
   _id: string;
   title: string;
-  date:String,
   excerpt: string;
   image: string;
   categories: string[] | string;
@@ -94,7 +93,6 @@ const Blog: React.FC = () => {
                     alt={blog.title}
                     className="w-full h-full object-fill group-hover:scale-105 transition"
                   />
-                  <span>{blog.date}</span>
                 </div>
 
                 {/* Content */}
@@ -103,8 +101,12 @@ const Blog: React.FC = () => {
                   <div className="flex items-center text-gray-400 text-xs mb-3">
                     <Calendar className="w-4 h-4 mr-1" />
                     {blog.createdAt
-                      ? new Date(blog.createdAt).toDateString()
-                      : "05 May 2026"}
+                      ? new Date(blog.createdAt).toLocaleDateString("en-GB", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      })
+                      : ""}
                   </div>
 
                   {/* Title */}
@@ -118,8 +120,8 @@ const Blog: React.FC = () => {
                   </p>
 
                   {/* Excerpt */}
-                  <p className="text-gray-500 text-sm mb-4">
-                    {blog.excerpt}
+                  <p className="text-gray-500 text-sm mb-4" >
+                    {blog.excerpt.slice(0, 200)} .....
                   </p>
 
                   {/* Tags */}
@@ -127,9 +129,8 @@ const Blog: React.FC = () => {
                     {categories.map((cat: string, index: number) => (
                       <span
                         key={index}
-                        className={`${
-                          tagColors[index % tagColors.length]
-                        } px-3 py-1 rounded-full text-xs`}
+                        className={`${tagColors[index % tagColors.length]
+                          } px-3 py-1 rounded-full text-xs`}
                       >
                         {cat}
                       </span>

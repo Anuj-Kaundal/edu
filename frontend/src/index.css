@@ -3,42 +3,90 @@
 @tailwind utilities;
 
 @layer utilities {
-    @keyframes scroll {
-      0% {
-        transform: translateX(0);
-      }
-      100% {
-        transform: translateX(-50%);
-      }
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
     }
-  
-    .animate-scroll {
-      display: flex;
-      animation: scroll 60s linear infinite;
+
+    100% {
+      transform: translateX(-50%);
     }
   }
-  
-  :root {
-    --foreground-rgb: 0, 0, 0;
-    --background-rgb: 255, 255, 255;
+
+  .animate-scroll {
+    display: flex;
+    animation: scroll 60s linear infinite;
   }
-  
-  body {
-    color: rgb(var(--foreground-rgb));
-    background: rgb(var(--background-rgb));
-  }
-  a{
-    color: rgba(0, 0, 255, 0.766);
-    text-decoration: none;
-  }
-  /* Editor ki minimum height set karne ke liye */
-.ck-editor__editable_inline {
-    min-height: 400px;
 }
-table,tr,td{
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+.ck-content a {
+  color: rgba(0, 0, 255, 0.766);
+  text-decoration: none;
+}
+
+/* Editor ki minimum height set karne ke liye */
+.ck-editor__editable_inline {
+  min-height: 400px;
+}
+.ck-content table{
+  width: 100%;
+}
+.ck-content table,
+tr,
+td {
   padding: 10px;
   border: 2px solid rgba(128, 128, 128, 0.352);
 }
-td{
+
+.ck-content td {
   padding-right: 72px;
+}
+
+.ck-content h1 {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.ck-content h2 {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.ck-content h3 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.ck-content h4 {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.ck-content h5 {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.ck-content h6 {
+  font-size: 16px;
+  font-weight: bold;
+}
+.ck-content ol {
+    list-style-type: decimal !important;
+    padding-left: 30px !important;
+}
+
+.ck-content ul {
+    list-style-type: disc !important;
+    padding-left: 30px !important;
 }
