@@ -108,18 +108,18 @@ const BlogDetails = () => {
             <div className="bg-[#F8FAFC] min-h-screen pb-20">
                 <div className="h-24"></div>
 
-                <div className="w-full  px-4 md:px-6">
-                    <button
+                <div className="w-full px-4 md:px-6 max-w-7xl mx-auto flex justify-center">
+
+                    <div className="flex flex-col lg:flex-row gap-12">
+                        {/* LEFT: MAIN CONTENT */}
+                        <main className="lg:w-[80%]">
+                            <button
                         onClick={() => navigate(-1)}
                         className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors mb-8 group bg-transparent border-none cursor-pointer"
                     >
                         <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                         <span className="text-sm font-semibold">Back to Blog</span>
                     </button>
-
-                    <div className="flex flex-col lg:flex-row gap-12">
-                        {/* LEFT: MAIN CONTENT */}
-                        <main className="lg:w-[1000px]">
                             <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                                 <img src={blog.image} alt={blog.title} className="w-full lg:h-[400px] object-fill" />
 
@@ -153,7 +153,7 @@ const BlogDetails = () => {
                         </main>
 
                         {/* RIGHT: SIDEBAR (ACCORDION TOC) */}
-                        <aside className="lg:w-1/4">
+                        <aside className="lg:w-[30%]">
                             <div className="sticky top-28 space-y-6">
                                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                                     <div className="flex items-center gap-3 mb-6">

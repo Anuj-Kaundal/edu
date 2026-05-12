@@ -24,10 +24,11 @@ export default function OurCourses() {
   return (
     <>
       <div className="text-center py-6">
-        <h1 className="text-3xl font-semibold">Courses We Offer</h1>
+        <h1 className="text-3xl font-semibold mt-50">Courses We Offer</h1>
       </div>
 
       <div className="min-h-screen bg-white p-4 mt-8">
+        <h1 className="text-3xl font-semibold p-10 text-center">Courses We Offer</h1>
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-center space-x-4 mb-6">
             <button

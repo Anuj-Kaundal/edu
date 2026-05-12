@@ -26,6 +26,7 @@ import Event from "../components/Event";
 import BlogDetails from "../components/BlogDetails";
 import NewsDetails from "../components/NewsDetails";
 import EventDetails from "../components/EventDetails";
+import OfflineInternship from "../components/OfflineInternship";
 
 export const routes: RouteObject[] = [
   // ✅ MAIN LAYOUT (Navbar yaha hoga)
@@ -38,7 +39,8 @@ export const routes: RouteObject[] = [
       { path: "contact-us", element: <Contact /> },
       { path: "about-us", element: <AboutUs /> },
       { path: "courses", element: <Courses /> },
-      { path: "internships", element: <Internships /> },
+      { path: "online-internship", element: <Internships /> },
+      { path: "offline-internship", element: <OfflineInternship /> },
       { path: "change-password", element: <ChangePassword /> },
       { path: "blog", element: <Blog /> },
       { path: "news", element: <News /> },

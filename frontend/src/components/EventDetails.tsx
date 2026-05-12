@@ -121,7 +121,7 @@ const EventDetails = () => {
             <div className="bg-[#F8FAFC] min-h-screen pb-20">
                 <div className="h-24"></div>
 
-                <div className="lg:px-20 p-4 md:p-10">
+                <div className="lg:px-20 p-4 md:p-10 max-w-7xl mx-auto flex">
                     <button
                         onClick={() => navigate(-1)}
                         className="flex items-center gap-2 text-gray-500 hover:text-blue-600 mb-8 group transition-colors border-none bg-transparent cursor-pointer"
@@ -130,15 +130,16 @@ const EventDetails = () => {
                         <span className="font-semibold">Back to Events</span>
                     </button>
 
-                    <div className="flex flex-col lg:flex-row gap-8">
+                    <div className="flex flex-col lg:flex-row gap-8  max-w-7xl mx-auto justify-center">
                         {/* LEFT CONTENT */}
                         <main className="lg:flex-1">
                             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                                 {event.image && <img src={event.image} alt={event.title} className="w-full lg:h-[400px] object-fill" />}
                                 <div className="flex flex-col gap-6 p-6 md:p-10">
-                                    <h1 className="text-2xl md:text-4xl font-extrabold text-gray-900 leading-tight">
+                                    <h1 className="text-2xl md:text-4xl font-extrabold text-yellow-700 leading-tight">
                                         {event.title}
                                     </h1>
+                                    <h1>ANUJ TESTING 123</h1>
                                     
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-y border-gray-100 py-6">
                                         <div className="flex gap-4 items-center">
