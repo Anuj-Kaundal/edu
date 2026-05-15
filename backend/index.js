@@ -23,6 +23,7 @@ import news from "./src/news/news.model.js"
 import event from "./src/event/event.model.js"
 // import { image } from "pdfkit";
 import userRoutes from "./src/user/user.route.js"
+import internshipSchema from "./src/internship/internship.js"
 dotenv.config();
 const app = express();
 app.use(cookieParser());
@@ -485,6 +486,34 @@ app.put(
     }
 
   });
+
+  // internship data
+
+  app.post('/internship', async (req, res) => {
+    const { name, email, phone, domain, duration, courses } = req.body;
+
+    if (!name || !email || !phone) {
+        return res.status(400).json({ error: "Name, Email, and Phone are required fields" });
+    }
+
+    try {
+        // Schema mein naye fields add karein
+        const add_Internship = await internshipSchema.create({
+            name,
+            email,
+            phone,
+            domain,
+            duration,
+            courses
+        });
+
+        // Success response
+        res.status(200).send(add_Internship);
+    } catch (error) {
+        console.error("Database Error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 
 // 🔥 IMPORTANT
 app.use("/", userRoutes);

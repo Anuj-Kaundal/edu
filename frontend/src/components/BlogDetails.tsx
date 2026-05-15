@@ -105,22 +105,22 @@ const BlogDetails = () => {
 
     return (
         <>
-            <div className="bg-[#F8FAFC] min-h-screen pb-20">
-                <div className="h-24"></div>
+            <div className="min-h-screen">
+                {/* <div className="h-24"></div> */}
 
-                <div className="w-full px-4 md:px-6 max-w-7xl mx-auto flex justify-center">
+                <div className="w-full flex justify-center">
 
-                    <div className="flex flex-col lg:flex-row gap-12">
+                    <div className="flex flex-col lg:flex-row gap-5 pl-20">
                         {/* LEFT: MAIN CONTENT */}
-                        <main className="lg:w-[80%]">
+                        <main className="lg:w-[100%] max-w-7xl mx-auto ml-20">
                             <button
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors mb-8 group bg-transparent border-none cursor-pointer"
-                    >
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-sm font-semibold">Back to Blog</span>
-                    </button>
-                            <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                                onClick={() => navigate(-1)}
+                                className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors mb-8 group bg-transparent border-none cursor-pointer"
+                            >
+                                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                                <span className="text-sm font-semibold">Back to Blog</span>
+                            </button>
+                            <article className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                                 <img src={blog.image} alt={blog.title} className="w-full lg:h-[400px] object-fill" />
 
                                 <div className="p-8 md:p-12">
@@ -153,24 +153,27 @@ const BlogDetails = () => {
                         </main>
 
                         {/* RIGHT: SIDEBAR (ACCORDION TOC) */}
-                        <aside className="lg:w-[30%]">
+                        <aside className="lg:col-span-3">
                             <div className="sticky top-28 space-y-6">
-                                <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                                    <div className="flex items-center gap-3 mb-6">
+                                {/* Height ko h-40 se badalkar max-h-[calc(100vh-120px)] kiya taaki screen ke hisaab se adjust ho */}
+                                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col max-h-[500px]">
+
+                                    {/* Header static rahega */}
+                                    <div className="flex items-center gap-3 mb-6 flex-shrink-0">
                                         <div className="p-2 bg-blue-50 rounded-lg">
                                             <List className="w-5 h-5 text-blue-600" />
                                         </div>
                                         <h3 className="font-bold text-gray-900 text-lg">Table of Contents</h3>
                                     </div>
 
-                                    <nav className="space-y-3">
+                                    {/* Nav section scrollable banaya gaya hai */}
+                                    <nav className="space-y-3 overflow-y-auto pr-2 custom-scrollbar">
                                         {tocStructure.map((h2, i) => (
                                             <div key={i} className="flex flex-col border-b border-gray-50 last:border-0 pb-2">
-                                                {/* H2 Heading Button (Clickable Bar) */}
                                                 <button
                                                     onClick={() => handleH2Click(h2.id)}
                                                     className={`w-full flex items-center justify-between py-2.5 px-3 rounded-xl text-sm transition-all duration-300 group border-none cursor-pointer
-                                                        ${openMenus[h2.id] ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600 bg-transparent'}`}
+                ${openMenus[h2.id] ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600 bg-transparent'}`}
                                                 >
                                                     <div className="flex items-center gap-3">
                                                         <span className={`w-1.5 h-1.5 rounded-full ${openMenus[h2.id] ? 'bg-blue-600' : 'bg-gray-300'}`}></span>
@@ -181,7 +184,6 @@ const BlogDetails = () => {
                                                     )}
                                                 </button>
 
-                                                {/* H3 Subheadings (Dropdown) */}
                                                 {openMenus[h2.id] && h2.subheadings.length > 0 && (
                                                     <div className="ml-7 mt-1 space-y-1 border-l-2 border-blue-100 pl-3 animate-in fade-in slide-in-from-top-2 duration-300">
                                                         {h2.subheadings.map((h3, j) => (
@@ -221,12 +223,13 @@ const BlogDetails = () => {
                                 }}
                             >
                                 <div className="h-52 overflow-hidden">
-                                    <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                    <img src={item.image} alt={item.title} className="w-full h-full object-fill group-hover:scale-110 transition-transform duration-500" />
                                 </div>
                                 <div className="p-6">
                                     <h3 className="text-xl font-bold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
                                         {item.title}
                                     </h3>
+                                    <p>{item.excerpt.slice(0, 98)} ....</p>
                                     <div className="mt-4 flex items-center text-sm text-gray-500 font-medium">
                                         Read Article <ChevronRight className="w-4 h-4 text-blue-600 ml-1" />
                                     </div>

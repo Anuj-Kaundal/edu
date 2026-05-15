@@ -78,21 +78,21 @@ const NewsDetails = () => {
 
     return (
         <>
-            <div className="bg-[#F8FAFC] min-h-screen pb-20">
-                <div className="h-24"></div>
+            <div className="min-h-screen pb-20">
+                {/* <div className="h-24"></div> */}
 
-                <div className="max-w-7xl mx-auto px-4 md:px-6">
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors mb-8 group cursor-pointer border-none bg-transparent"
-                    >
-                        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                        <span className="text-sm font-semibold">Back to News</span>
-                    </button>
+                <div className="w-full flex justify-center">
 
-                    <div className="flex flex-col lg:flex-row gap-12">
+                    <div className="flex flex-col lg:flex-row gap-5">
                         {/* LEFT: Main News Content */}
-                        <main className="lg:w-[1000px]">
+                        <main className="lg:w-[100%] max-w-7xl mx-auto ml-20">
+                            <button
+                                onClick={() => navigate(-1)}
+                                className="flex items-center gap-2 text-gray-500 hover:text-blue-600 transition-colors mb-8 group cursor-pointer border-none bg-transparent"
+                            >
+                                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                                <span className="text-sm font-semibold">Back to News</span>
+                            </button>
                             <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                                 <div className="w-full lg:h-[400px] overflow-hidden">
                                     <img src={news.image} alt={news.title} className="w-full lg:h-[400px] object-fill" />
@@ -124,24 +124,27 @@ const NewsDetails = () => {
                         </main>
 
                         {/* RIGHT: Sidebar (Nested Table of Contents) */}
-                        <aside className="lg:w-1/4">
+                        <aside className="lg:col-span-3">
                             <div className="sticky top-28 space-y-6">
-                                <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-                                    <div className="flex items-center gap-3 mb-6">
+                                {/* Height ko h-40 se badalkar max-h-[calc(100vh-120px)] kiya taaki screen ke hisaab se adjust ho */}
+                                <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col max-h-[500px]">
+
+                                    {/* Header static rahega */}
+                                    <div className="flex items-center gap-3 mb-6 flex-shrink-0">
                                         <div className="p-2 bg-blue-50 rounded-lg">
                                             <List className="w-5 h-5 text-blue-600" />
                                         </div>
-                                        <h3 className="font-bold text-gray-900 text-lg">Quick Summary</h3>
+                                        <h3 className="font-bold text-gray-900 text-sm">Table of Contents</h3>
                                     </div>
 
-                                    <nav className="space-y-3">
+                                    {/* Nav section scrollable banaya gaya hai */}
+                                    <nav className="space-y-3 overflow-y-auto pr-2 custom-scrollbar">
                                         {tocStructure.map((h2, i) => (
                                             <div key={i} className="flex flex-col border-b border-gray-50 last:border-0 pb-2">
-                                                {/* H2 Heading Button (Clickable Bar) */}
                                                 <button
                                                     onClick={() => handleH2Click(h2.id)}
                                                     className={`w-full flex items-center justify-between py-2.5 px-3 rounded-xl text-sm transition-all duration-300 group border-none cursor-pointer
-                                                        ${openMenus[h2.id] ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600 bg-transparent'}`}
+                                                                ${openMenus[h2.id] ? 'bg-blue-50 text-blue-700' : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600 bg-transparent'}`}
                                                 >
                                                     <div className="flex items-center gap-3">
                                                         <span className={`w-1.5 h-1.5 rounded-full ${openMenus[h2.id] ? 'bg-blue-600' : 'bg-gray-300'}`}></span>
@@ -152,7 +155,6 @@ const NewsDetails = () => {
                                                     )}
                                                 </button>
 
-                                                {/* H3 Subheadings (Dropdown) */}
                                                 {openMenus[h2.id] && h2.subheadings.length > 0 && (
                                                     <div className="ml-7 mt-1 space-y-1 border-l-2 border-blue-100 pl-3 animate-in fade-in slide-in-from-top-2 duration-300">
                                                         {h2.subheadings.map((h3, j) => (
@@ -168,7 +170,7 @@ const NewsDetails = () => {
                                                 )}
                                             </div>
                                         ))}
-                                        {tocStructure.length === 0 && <p className="text-gray-400 text-sm italic text-center">No highlights available.</p>}
+                                        {tocStructure.length === 0 && <p className="text-gray-400 text-sm italic">No sections found.</p>}
                                     </nav>
                                 </div>
                             </div>

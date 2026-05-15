@@ -38,14 +38,14 @@ export default function Landing() {
   };
   return (
     <div
-      className="relative min-h-screen bg-cover bg-center"
+      className="relative min-h-screen bg-cover bg-center"max-w-7xl mx-auto
       style={{ backgroundImage: `url(${landing})` }}
     >
       {/* Overlay */}
       <div className="absolute inset-0 bg-black/50"></div>
 
       {/* Content */}
-      <div className="relative flex flex-col md:flex-row items-center justify-between text-white px-4 md:px-16 py-10 gap-10">
+      <div className="relative flex flex-col md:flex-row items-center justify-between text-white px-4 md:px-16 py-10 gap-10 max-w-7xl mx-auto">
         {/* Left Content */}
         <div className="max-w-lg space-y-6 pt-20 text-center md:text-left">
           <h2 className="text-3xl md:text-4xl font-bold">

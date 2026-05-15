@@ -3,8 +3,160 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { IoIosCloseCircle } from "react-icons/io";
 
+// for content section
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import Link from "@tiptap/extension-link";
+import Image from "@tiptap/extension-image";
+import TextAlign from "@tiptap/extension-text-align";
+
+import { Table } from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableHeader from "@tiptap/extension-table-header";
+import TableCell from "@tiptap/extension-table-cell";
+import HardBreak from "@tiptap/extension-hard-break";
+import {
+    Bold,
+    Italic,
+    UnderlineIcon,
+    List,
+    ListOrdered,
+    LinkIcon,
+    ImageIcon,
+    AlignLeft,
+    AlignCenter,
+    AlignRight,
+    Heading1,
+    Heading2,
+    Heading3,
+    Heading4,
+    Heading5,
+    Heading6,
+    Quote,
+    Table2,
+} from "lucide-react";
 function Event() {
+    // this part is for content section
+    const editor = useEditor({
+        extensions: [
+            StarterKit.configure({
+                heading: {
+                    levels: [1, 2, 3, 4, 5, 6],
+                },
+            }),
+
+            HardBreak,
+
+            Underline,
+
+            Link.configure({
+                openOnClick: false,
+                HTMLAttributes: {
+                    class:
+                        "text-blue-600 underline hover:text-blue-800 cursor-pointer",
+                },
+            }),
+
+            Image,
+
+            TextAlign.configure({
+                types: ["heading", "paragraph"],
+            }),
+
+            Table.configure({
+                resizable: true,
+            }),
+
+            TableRow,
+            TableHeader,
+            TableCell,
+        ],
+
+        editorProps: {
+
+            attributes: {
+                class:
+                    "min-h-[400px] p-4 focus:outline-none text-gray-800",
+            },
+
+            handlePaste(view, event) {
+
+                const html =
+                    event.clipboardData?.getData("text/html");
+
+                if (html) {
+
+                    editor.commands.insertContent(html);
+
+                    return true;
+                }
+
+                return false;
+            },
+        },
+    });
+
+    if (!editor) return null;
+
+    // Add Link
+    const addLink = () => {
+        const url = window.prompt("Enter URL");
+
+        if (!url) return;
+
+        editor.chain().focus().setLink({ href: url }).run();
+    };
+
+    // Add Image
+    const addImage = () => {
+
+        const input = document.createElement("input");
+
+        input.type = "file";
+
+        input.accept = "image/*";
+
+        input.click();
+
+        input.onchange = (event) => {
+
+            const file = event.target.files?.[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = () => {
+
+                editor
+                    ?.chain()
+                    .focus()
+                    .setImage({
+                        src: reader.result,
+                    })
+                    .run();
+            };
+
+            reader.readAsDataURL(file);
+        };
+    };
+
+    // Add Table
+    const addTable = () => {
+        editor
+            .chain()
+            .focus()
+            .insertTable({
+                rows: 3,
+                cols: 3,
+                withHeaderRow: true,
+            })
+            .run();
+    };
+    // end here
     const [addData, setAddData] = useState('');
 
     const editorConfiguration = {
@@ -150,7 +302,7 @@ function Event() {
                 };
             });
 
-            setEventList(formattedData);
+            setEventList(formattedData.reverse());
 
         } catch (err) {
 
@@ -208,7 +360,7 @@ function Event() {
             return;
         }
 
-        const img = new Image();
+        const img = new window.Image();
 
         const objectUrl = URL.createObjectURL(file);
 
@@ -395,11 +547,14 @@ function Event() {
                         JSON.stringify(formData.categories)
                     );
 
-                } else {
+                } else if (key !== "content") {
 
                     data.append(key, formData[key]);
                 }
             });
+
+            // TipTap HTML content
+            data.append("content", editor.getHTML());
 
             // UPDATE EVENT
             if (editId) {
@@ -568,14 +723,280 @@ function Event() {
                             <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
                                 <h2 className="text-lg font-bold mb-2">Event Content <span className="text-red-500">*</span></h2>
                                 <p className="text-sm text-gray-500 mb-6">Create detailed content for your event page with rich formatting, images, and more.</p>
-                                <div className="rounded-lg overflow-hidden border border-gray-200">
-                                    <CKEditor
-                                        key={editorKey}
-                                        editor={ClassicEditor}
-                                        data={formData.content}
-                                        config={editorConfiguration}
-                                        onChange={handleContentChange}
-                                    />
+                                <div className="bg-white rounded-lg">
+                                    <div className="max-w-5xl mx-auto mt-10 border rounded-xl overflow-hidden shadow-lg">
+
+                                        {/* Toolbar */}
+                                        <div className="flex flex-wrap items-center gap-2 p-3 border-b bg-gray-100">
+
+                                            {/* Heading part */}
+                                            <select
+                                                value={
+                                                    editor.isActive("heading", { level: 1 })
+                                                        ? "1"
+                                                        : editor.isActive("heading", { level: 2 })
+                                                            ? "2"
+                                                            : editor.isActive("heading", { level: 3 })
+                                                                ? "3"
+                                                                : editor.isActive("heading", { level: 4 })
+                                                                    ? "4"
+                                                                    : editor.isActive("heading", { level: 5 })
+                                                                        ? "5"
+                                                                        : editor.isActive("heading", { level: 6 })
+                                                                            ? "6"
+                                                                            : "paragraph"
+                                                }
+                                                onChange={(e) => {
+
+                                                    const value = e.target.value;
+
+                                                    if (value === "paragraph") {
+
+                                                        editor
+                                                            .chain()
+                                                            .focus()
+                                                            .setParagraph()
+                                                            .run();
+
+                                                    } else {
+
+                                                        editor
+                                                            .chain()
+                                                            .focus()
+                                                            .toggleHeading({
+                                                                level: Number(value),
+                                                            })
+                                                            .run();
+                                                    }
+                                                }}
+                                                className="border border-gray-300 rounded-lg px-5 py-1 text-sm bg-white outline-none"
+                                            >
+
+                                                <option value="paragraph">
+                                                    Paragraph
+                                                </option>
+
+                                                <option value="1">
+                                                    Heading 1
+                                                </option>
+
+                                                <option value="2">
+                                                    Heading 2
+                                                </option>
+
+                                                <option value="3">
+                                                    Heading 3
+                                                </option>
+
+                                                <option value="4">
+                                                    Heading 4
+                                                </option>
+
+                                                <option value="5">
+                                                    Heading 5
+                                                </option>
+
+                                                <option value="6">
+                                                    Heading 6
+                                                </option>
+
+                                            </select>
+
+                                            <div className="w-px h-6 bg-gray-300"></div>
+
+                                            {/* Bold */}
+                                            <button
+                                                onClick={() => editor.chain().focus().toggleBold().run()}
+                                                className={`p-2 rounded ${editor.isActive("bold")
+                                                    ? "bg-gray-300"
+                                                    : "hover:bg-gray-200"
+                                                    }`}
+                                            >
+                                                <Bold size={18} />
+                                            </button>
+
+                                            {/* Italic */}
+                                            <button
+                                                onClick={() => editor.chain().focus().toggleItalic().run()}
+                                                className={`p-2 rounded ${editor.isActive("italic")
+                                                    ? "bg-gray-300"
+                                                    : "hover:bg-gray-200"
+                                                    }`}
+                                            >
+                                                <Italic size={18} />
+                                            </button>
+
+                                            {/* Underline */}
+                                            <button
+                                                onClick={() => editor.chain().focus().toggleUnderline().run()}
+                                                className={`p-2 rounded ${editor.isActive("underline")
+                                                    ? "bg-gray-300"
+                                                    : "hover:bg-gray-200"
+                                                    }`}
+                                            >
+                                                <UnderlineIcon size={18} />
+                                            </button>
+
+                                            <div className="w-px h-6 bg-gray-300"></div>
+
+                                            {/* Bullet List */}
+                                            <button
+                                                onClick={() =>
+                                                    editor.chain().focus().toggleBulletList().run()
+                                                }
+                                                className={`p-2 rounded ${editor.isActive("bulletList")
+                                                    ? "bg-gray-300"
+                                                    : "hover:bg-gray-200"
+                                                    }`}
+                                            >
+                                                <List size={18} />
+                                            </button>
+
+                                            {/* Ordered List */}
+                                            <button
+                                                onClick={() =>
+                                                    editor.chain().focus().toggleOrderedList().run()
+                                                }
+                                                className={`p-2 rounded ${editor.isActive("orderedList")
+                                                    ? "bg-gray-300"
+                                                    : "hover:bg-gray-200"
+                                                    }`}
+                                            >
+                                                <ListOrdered size={18} />
+                                            </button>
+
+                                            <div className="w-px h-6 bg-gray-300"></div>
+
+                                            {/* Link */}
+                                            <button
+                                                onClick={addLink}
+                                                className="p-2 rounded hover:bg-gray-200"
+                                            >
+                                                <LinkIcon size={18} />
+                                            </button>
+
+                                            {/* Image */}
+                                            <button
+                                                onClick={addImage}
+                                                className="p-2 rounded hover:bg-gray-200"
+                                            >
+                                                <ImageIcon size={18} />
+                                            </button>
+
+                                            {/* Table */}
+                                            <button
+                                                onClick={addTable}
+                                                className="p-2 rounded hover:bg-gray-200"
+                                            >
+                                                <Table2 size={18} />
+                                            </button>
+
+                                            <div className="w-px h-6 bg-gray-300"></div>
+
+                                            {/* Align Left */}
+                                            <button
+                                                onClick={() =>
+                                                    editor.chain().focus().setTextAlign("left").run()
+                                                }
+                                                className="p-2 rounded hover:bg-gray-200"
+                                            >
+                                                <AlignLeft size={18} />
+                                            </button>
+
+                                            {/* Align Center */}
+                                            <button
+                                                onClick={() =>
+                                                    editor.chain().focus().setTextAlign("center").run()
+                                                }
+                                                className="p-2 rounded hover:bg-gray-200"
+                                            >
+                                                <AlignCenter size={18} />
+                                            </button>
+
+                                            {/* Align Right */}
+                                            <button
+                                                onClick={() =>
+                                                    editor.chain().focus().setTextAlign("right").run()
+                                                }
+                                                className="p-2 rounded hover:bg-gray-200"
+                                            >
+                                                <AlignRight size={18} />
+                                            </button>
+
+                                            <div className="w-px h-6 bg-gray-300"></div>
+
+                                            {/* Quote */}
+                                            <button
+                                                onClick={() =>
+                                                    editor.chain().focus().toggleBlockquote().run()
+                                                }
+                                                className={`p-2 rounded ${editor.isActive("blockquote")
+                                                    ? "bg-gray-300"
+                                                    : "hover:bg-gray-200"
+                                                    }`}
+                                            >
+                                                <Quote size={18} />
+                                            </button>
+                                        </div>
+
+                                        {/* Editor */}
+                                        <EditorContent
+                                            editor={editor}
+                                            className="
+                                            
+                                                                    h-[400px]
+                                                                    overflow-y-auto
+                                                                    prose
+                                                                    [&_p]:mb-4
+                                                                    max-w-none
+                                                                    bg-white
+                                
+                                                                    [&_h1]:text-3xl
+                                                                    [&_h1]:font-bold
+                                
+                                                                    [&_h2]:text-2xl
+                                                                    [&_h2]:font-bold
+                                
+                                                                    [&_h3]:text-xl
+                                                                    [&_h3]:font-bold
+                                
+                                                                    [&_h4]:text-lg
+                                                                    [&_h4]:font-semibold
+                                
+                                                                    [&_h5]:text-base
+                                                                    [&_h5]:font-semibold
+                                
+                                                                    [&_h6]:text-sm
+                                                                    [&_h6]:font-semibold
+                                
+                                                                    [&_p]:text-gray-700
+                                
+                                                                    [&_ul]:list-disc
+                                                                    [&_ul]:pl-6
+                                
+                                                                    [&_ol]:list-decimal
+                                                                    [&_ol]:pl-6
+                                
+                                                                    [&_blockquote]:border-l-4
+                                                                    [&_blockquote]:border-gray-300
+                                                                    [&_blockquote]:pl-4
+                                                                    [&_blockquote]:italic
+                                
+                                                                    [&_table]:w-full
+                                                                    [&_table]:border-collapse
+                                                                    [&_table]:my-4
+                                
+                                                                    [&_th]:border
+                                                                    [&_th]:border-gray-300
+                                                                    [&_th]:bg-gray-100
+                                                                    [&_th]:p-2
+                                
+                                                                    [&_td]:border
+                                                                    [&_td]:border-gray-300
+                                                                    [&_td]:p-2
+                                                                   "
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -655,7 +1076,39 @@ function Event() {
                                             <p className="text-xs text-gray-400 mt-1">PNG, JPG, WebP up to 5MB</p>
                                         </div>
                                     ) : (
-                                        <img src={preview} alt="Preview" className="w-full h-auto rounded-lg shadow-sm" />
+                                        <div className="relative w-full">
+
+                                            <img
+                                                src={preview}
+                                                alt="Preview"
+                                                className="w-full h-auto rounded-lg shadow-sm"
+                                            />
+
+                                            {/* Remove Button */}
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+
+                                                    setPreview("");
+
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        image: null,
+                                                    }));
+
+                                                    if (fileInputRef.current) {
+                                                        fileInputRef.current.value = "";
+                                                    }
+                                                }}
+                                                className="
+                                                absolute
+                                                top-3
+                                                right-3">
+                                                <IoIosCloseCircle className="text-red-600 text-3xl"/>
+
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
